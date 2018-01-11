@@ -34,8 +34,8 @@ public class NeuralNetwork {
 	}
 
 	public double printError(double[] inputData, String expected) {
-		DecimalFormat df = new DecimalFormat();
-		df.setMaximumFractionDigits(6);
+//		DecimalFormat df = new DecimalFormat();
+//		df.setMaximumFractionDigits(6);
 		double totalError = 0.0;
 		setupForPredict(inputData);
 		printTrainingExample(inputData, expected);
@@ -48,7 +48,7 @@ public class NeuralNetwork {
 			} else {
 				error = Math.abs(0.0 - prob);
 			}
-			System.out.print(outputs.get(output) + ": " + df.format(prob) + "\t\t");
+			System.out.print(outputs.get(output) + ": " + prob + "\t\t");
 			totalError += error;
 		}
 		System.out.println();
@@ -126,9 +126,9 @@ public class NeuralNetwork {
 	}
 
 	public void scramble() {
-//		for (Neuron neuron : getNeurons().values()) {
-//			neuron.scramble();
-//		}
+		for (Neuron neuron : getNeurons().values()) {
+			neuron.scramble();
+		}
 	}
 
 	public void printNetwork() {

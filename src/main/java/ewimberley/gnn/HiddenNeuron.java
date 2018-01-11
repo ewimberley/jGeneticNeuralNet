@@ -22,7 +22,7 @@ public class HiddenNeuron extends Neuron {
 				output += prevOutput * prevWeight;
 			}
 			output += bias;
-			memoizedActivation = output;
+			memoizedActivation = arctan(output);
 			memoized = true;
 		}
 		return memoizedActivation;

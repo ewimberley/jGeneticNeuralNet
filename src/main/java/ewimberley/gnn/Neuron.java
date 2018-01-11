@@ -55,6 +55,11 @@ public abstract class Neuron implements Cloneable {
 		return ((Math.sin(in * Math.PI - Math.PI / 2) + 1) / 2.0);
 	}
 	
+	public double arctan(double in) {
+		//y=arctan(x)/Pi+0.5
+		return Math.atan(in)/Math.PI+0.5;
+	}
+	
 	public abstract double activation();
 
 	public Set<String> getNext() {
@@ -103,7 +108,9 @@ public abstract class Neuron implements Cloneable {
 	public void scramble() {
 		boolean biasNegative = (network.getRandomDouble() > 0.5);
 		setBias(network.getRandomDouble() * network.getLearningRate() * (biasNegative ? -1.0 : 1.0));
+//		setBias(0.0);
 		for (String nextNeuron : nextWeights.keySet()) {
+//			nextWeights.put(nextNeuron, 1.0);
 			boolean weightNegative = (network.getRandomDouble() > 0.5);
 			nextWeights.put(nextNeuron,
 					(network.getRandomDouble() * network.getLearningRate() * (weightNegative ? -1.0 : 1.0)));

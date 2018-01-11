@@ -43,8 +43,8 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 
 	public GenticNeuralNetwork(double[][] data, String[] classLabels) {
 		super();
-		setLearningRate(0.4); // reasonable default
-		setAnnealingRate(0.03);
+		setLearningRate(0.10); // reasonable default
+		setAnnealingRate(0.000001);
 		this.data = data;
 		this.classLabels = classLabels;
 		this.neurons = new HashMap<String, Neuron>();
@@ -91,7 +91,7 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 			//for (GenticNeuralNetwork network : population) {
 			for(int onNetwork = 0; onNetwork < numNetworksPerGeneration; onNetwork++) {
 				GenticNeuralNetwork network = population.poll();
-				System.out.println("Evaluating fitness of network with average error: " + network.getAverageError());
+//				System.out.println("Evaluating fitness of network with average error: " + network.getAverageError());
 				ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 				List<NeuralNetworkWorker> originalWorkers = new ArrayList<NeuralNetworkWorker>();
 				List<NeuralNetworkWorker> mutantWorkers = new ArrayList<NeuralNetworkWorker>();
@@ -144,7 +144,7 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 				
 			}
 			population = survivors;
-			bestNetwork.printNetwork();
+			//bestNetwork.printNetwork();
 			System.out.println("Best network had average error: " + bestAverageError);
 		}
 		System.out.println("Best network had average error: " + bestAverageError);

@@ -12,6 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import ewimberley.ml.Classifier;
+import ewimberley.ml.ConfusionMatrix;
 
 public class GenticNeuralNetwork extends NeuralNetwork {
 
@@ -58,17 +59,7 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 
 	public static Classifier train(double[][] data, String[] classLabels, int numNetworksPerGeneration,
 			int numGenerations, int numHiddenLayers, int numNeuronsPerLayer, double learningRate) {
-		Set<String> uniqueClassLabels = calculateUniqueClassLabels(classLabels);
-		Map<String, Integer> classLabelConfusionMatrixIndices = new HashMap<String, Integer>();
-		String[] confusionMatrixIndicesToClassLabel = new String[uniqueClassLabels.size()];
-		int onConfusionMatrixIndex = 0;
-		for (String uniqueClassLabel : uniqueClassLabels) {
-			classLabelConfusionMatrixIndices.put(uniqueClassLabel, onConfusionMatrixIndex);
-			confusionMatrixIndicesToClassLabel[onConfusionMatrixIndex] = uniqueClassLabel;
-			onConfusionMatrixIndex++;
-		}
-		// first dimension is expected, second dimension is predicted
-		int[][] confusionMatrix = new int[uniqueClassLabels.size()][uniqueClassLabels.size()];
+		ConfusionMatrix cf = new ConfusionMatrix(classLabels);
 
 		// FIXME implement 10-fold cross validation
 		// currently random training/testing set
@@ -153,8 +144,8 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 		}
 		// System.out.println("Best network had average error: " + bestAverageError);
 		// bestNetwork.printNetwork();
-		bestNetwork.test(data, classLabels, confusionMatrix, testingIndices, classLabelConfusionMatrixIndices);
-		printConfusionMatix(confusionMatrixIndicesToClassLabel, confusionMatrix);
+		bestNetwork.test(data, classLabels, cf, testingIndices);
+		cf.printConfusionMatix();
 		return bestNetwork;
 	}
 

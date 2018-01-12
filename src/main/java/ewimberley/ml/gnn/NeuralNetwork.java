@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.Set;
 
 import ewimberley.ml.Classifier;
+import ewimberley.ml.ConfusionMatrix;
 
 public abstract class NeuralNetwork extends Classifier {
 
@@ -30,8 +31,7 @@ public abstract class NeuralNetwork extends Classifier {
 		featureToInputMap = new HashMap<Integer, InputNeuron>();
 	}
 
-	public void test(double[][] inputData, String[] expected, int[][] confusionMatrix, List<Integer> testingIndices,
-			Map<String, Integer> classLabelConfusionMatrixIndices) {
+	public void test(double[][] inputData, String[] expected, ConfusionMatrix cf, List<Integer> testingIndices) {
 		for (Integer testingIndex : testingIndices) {
 			setupForPredict(inputData[testingIndex]);
 			double highestProb = 0.0;
@@ -45,7 +45,7 @@ public abstract class NeuralNetwork extends Classifier {
 			}
 			String expectedClass = expected[testingIndex];
 			System.out.println("Expected " + expectedClass + ", predicted " + highestProbClass + " with probability " + highestProb);
-			confusionMatrix[classLabelConfusionMatrixIndices.get(expectedClass)][classLabelConfusionMatrixIndices.get(highestProbClass)]++;
+			cf.getConfusionMatrix()[cf.getClassLabelConfusionMatrixIndices().get(expectedClass)][cf.getClassLabelConfusionMatrixIndices().get(highestProbClass)]++;
 		}
 	}
 

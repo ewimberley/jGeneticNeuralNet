@@ -1,8 +1,10 @@
-package ewimberley.gnn;
+package ewimberley.ml;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+
+import ewimberley.ml.DataLoader;
 
 public class DataLoaderTest {
 

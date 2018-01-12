@@ -1,12 +1,18 @@
-package ewimberley.gnn;
+package ewimberley.ml;
 
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * The parent class of all classifiers.
+ * 
+ * @author ewimberley
+ *
+ */
 public abstract class Classifier {
 
-	protected String[] classLabels;
-	protected double[][] data;
+	private String[] classLabels;
+	private double[][] data;
 	protected Set<String> uniqueClassLabels;
 	protected Random rand;
 
@@ -20,10 +26,24 @@ public abstract class Classifier {
 		System.out.println(", " + label);
 	}
 
+	/**
+	 * Get a random number between 0 and 1.
+	 * 
+	 * @return a random double
+	 */
 	public double getRandomDouble() {
 		return rand.nextDouble();
 	}
 
+	/**
+	 * Get a random number within a range.
+	 * 
+	 * @param min
+	 *            the minimum number in the range
+	 * @param max
+	 *            the maximum nunber in the range
+	 * @return a random integer
+	 */
 	public int getNextInt(int min, int max) {
 		return rand.nextInt((max - min) + 1) + min;
 	}
@@ -39,7 +59,7 @@ public abstract class Classifier {
 				System.out.println();
 			}
 			for (int j = 0; j < confusionMatrix[i].length; j++) {
-				if(j == 0) {
+				if (j == 0) {
 					System.out.print(confusionMatrixIndicesToClassLabel[i] + "\t\t");
 				}
 				System.out.print(confusionMatrix[i][j] + "\t");
@@ -47,7 +67,7 @@ public abstract class Classifier {
 			}
 			System.out.println();
 		}
-		
+
 		int numCorrect = 0;
 		for (int i = 0; i < confusionMatrix.length; i++) {
 			numCorrect += confusionMatrix[i][i];
@@ -58,6 +78,22 @@ public abstract class Classifier {
 
 	public Classifier() {
 		super();
+	}
+
+	public double[][] getData() {
+		return data;
+	}
+
+	public void setData(double[][] data) {
+		this.data = data;
+	}
+
+	public String[] getClassLabels() {
+		return classLabels;
+	}
+
+	public void setClassLabels(String[] classLabels) {
+		this.classLabels = classLabels;
 	}
 
 }

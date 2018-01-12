@@ -1,4 +1,4 @@
-package ewimberley.gnn;
+package ewimberley.ml.gnn;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import ewimberley.ml.Classifier;
+
 public class GenticNeuralNetwork extends NeuralNetwork {
 
 	private static final int NUM_THREADS = 100;
@@ -18,7 +20,7 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 	private double averageError;
 
 	public GenticNeuralNetwork(NeuralNetwork toClone) {
-		this(toClone.data, toClone.classLabels);
+		this(toClone.getData(), toClone.getClassLabels());
 		for (Map.Entry<String, Neuron> neuronEntry : toClone.getNeurons().entrySet()) {
 			String id = neuronEntry.getKey();
 			Neuron neuron = neuronEntry.getValue();
@@ -46,8 +48,8 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 		super();
 		setLearningRate(0.10); // reasonable default
 		setAnnealingRate(0.000001);
-		this.data = data;
-		this.classLabels = classLabels;
+		this.setData(data);
+		this.setClassLabels(classLabels);
 		this.neurons = new HashMap<String, Neuron>();
 		numHiddenLayers = 1; // reasonable default
 		numNeuronsPerLayer = 5; // reasonable default
@@ -190,7 +192,11 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 		currentLayerIds = new HashSet<String>();
 
 		// create output layer
-		uniqueClassLabels = calculateUniqueClassLabels(classLabels);
+		createOutputLayer(previousLayer, currentLayer, currentLayerIds);
+	}
+
+	private void createOutputLayer(Set<Neuron> previousLayer, Set<Neuron> currentLayer, Set<String> currentLayerIds) {
+		uniqueClassLabels = calculateUniqueClassLabels(getClassLabels());
 		outputs = new HashMap<OutputNeuron, String>();
 		String[] lableStrings = uniqueClassLabels.toArray(new String[] {});
 		for (int i = 0; i < uniqueClassLabels.size(); i++) {

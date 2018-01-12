@@ -1,4 +1,4 @@
-package ewimberley.gnn;
+package ewimberley.ml.gnn;
 
 public class NeuralNetworkWorkerOld implements Runnable {
 	

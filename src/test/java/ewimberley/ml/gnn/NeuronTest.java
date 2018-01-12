@@ -1,9 +1,12 @@
-package ewimberley.gnn;
+package ewimberley.ml.gnn;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
+
+import ewimberley.ml.gnn.HiddenNeuron;
+import ewimberley.ml.gnn.Neuron;
 
 public class NeuronTest {
 

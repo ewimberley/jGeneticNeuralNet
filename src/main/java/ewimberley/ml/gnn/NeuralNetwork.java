@@ -1,4 +1,4 @@
-package ewimberley.gnn;
+package ewimberley.ml.gnn;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+
+import ewimberley.ml.Classifier;
 
 public abstract class NeuralNetwork extends Classifier {
 
@@ -90,7 +92,7 @@ public abstract class NeuralNetwork extends Classifier {
 	}
 
 	protected void createInputLayer() {
-		int numInputs = data[0].length;
+		int numInputs = getData()[0].length;
 		inputs = new HashSet<InputNeuron>();
 		featureToInputMap = new HashMap<Integer, InputNeuron>();
 		for (int i = 0; i < numInputs; i++) {

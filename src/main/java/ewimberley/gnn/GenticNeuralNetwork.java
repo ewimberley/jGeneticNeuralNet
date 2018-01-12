@@ -14,9 +14,9 @@ import java.util.concurrent.Executors;
 public class GenticNeuralNetwork extends NeuralNetwork {
 
 	private static final int NUM_THREADS = 100;
-	
+
 	private double averageError;
-	
+
 	public GenticNeuralNetwork(NeuralNetwork toClone) {
 		this(toClone.data, toClone.classLabels);
 		for (Map.Entry<String, Neuron> neuronEntry : toClone.getNeurons().entrySet()) {
@@ -35,7 +35,8 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 			}
 		}
 		for (Map.Entry<Integer, InputNeuron> inputMappingEntry : toClone.getFeatureToInputMap().entrySet()) {
-			featureToInputMap.put(inputMappingEntry.getKey(), (InputNeuron) neurons.get(inputMappingEntry.getValue().getUuid()));
+			featureToInputMap.put(inputMappingEntry.getKey(),
+					(InputNeuron) neurons.get(inputMappingEntry.getValue().getUuid()));
 		}
 		this.layers = toClone.layers;
 		setLearningRate(toClone.getLearningRate() * (1.0 - toClone.getAnnealingRate()));
@@ -50,11 +51,24 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 		this.neurons = new HashMap<String, Neuron>();
 		numHiddenLayers = 1; // reasonable default
 		numNeuronsPerLayer = 5; // reasonable default
+		averageError = -1.0;
 	}
 
-	public static NeuralNetwork train(double[][] data, String[] classLabels, int numNetworksPerGeneration,
+	public static Classifier train(double[][] data, String[] classLabels, int numNetworksPerGeneration,
 			int numGenerations, int numHiddenLayers, int numNeuronsPerLayer, double learningRate) {
-		// FIXME 10-fold cross validation
+		Set<String> uniqueClassLabels = calculateUniqueClassLabels(classLabels);
+		Map<String, Integer> classLabelConfusionMatrixIndices = new HashMap<String, Integer>();
+		String[] confusionMatrixIndicesToClassLabel = new String[uniqueClassLabels.size()];
+		int onConfusionMatrixIndex = 0;
+		for (String uniqueClassLabel : uniqueClassLabels) {
+			classLabelConfusionMatrixIndices.put(uniqueClassLabel, onConfusionMatrixIndex);
+			confusionMatrixIndicesToClassLabel[onConfusionMatrixIndex] = uniqueClassLabel;
+			onConfusionMatrixIndex++;
+		}
+		// first dimension is expected, second dimension is predicted
+		int[][] confusionMatrix = new int[uniqueClassLabels.size()][uniqueClassLabels.size()];
+
+		// FIXME implement 10-fold cross validation
 		// currently random training/testing set
 		List<Integer> dataIndices = new ArrayList<Integer>();
 		for (int i = 0; i < data.length; i++) {
@@ -73,8 +87,9 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 		}
 
 		double bestAverageError = Double.MAX_VALUE;
-		GenticNeuralNetwork bestNetwork = null;
-		PriorityQueue<GenticNeuralNetwork> population = new PriorityQueue<GenticNeuralNetwork>(new NeuralNetworkErrorComparator());
+		NeuralNetwork bestNetwork = null;
+		PriorityQueue<GenticNeuralNetwork> population = new PriorityQueue<GenticNeuralNetwork>(
+				new NeuralNetworkErrorComparator());
 		for (int i = 0; i < numNetworksPerGeneration; i++) {
 			GenticNeuralNetwork network = new GenticNeuralNetwork(data, classLabels);
 			network.setLearningRate(learningRate);
@@ -87,71 +102,57 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 		}
 		for (int gen = 1; gen <= numGenerations; gen++) {
 			System.out.println("On generation " + gen + " Population size: " + population.size());
-			PriorityQueue<GenticNeuralNetwork> survivors = new PriorityQueue<GenticNeuralNetwork>(new NeuralNetworkErrorComparator());
-			//for (GenticNeuralNetwork network : population) {
-			for(int onNetwork = 0; onNetwork < numNetworksPerGeneration; onNetwork++) {
+			PriorityQueue<GenticNeuralNetwork> survivors = new PriorityQueue<GenticNeuralNetwork>(
+					new NeuralNetworkErrorComparator());
+			ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+			List<NeuralNetworkWorker> workers = new ArrayList<NeuralNetworkWorker>();
+			for (int onNetwork = 0; onNetwork < numNetworksPerGeneration; onNetwork++) {
 				GenticNeuralNetwork network = population.poll();
-//				System.out.println("Evaluating fitness of network with average error: " + network.getAverageError());
-				ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
-				List<NeuralNetworkWorker> originalWorkers = new ArrayList<NeuralNetworkWorker>();
-				List<NeuralNetworkWorker> mutantWorkers = new ArrayList<NeuralNetworkWorker>();
-				GenticNeuralNetwork clone = new GenticNeuralNetwork(network);
-		    	clone.mutate();
-				for (Integer trainingIndex : trainingIndices) {
-					NeuralNetworkWorker originalWorker = new NeuralNetworkWorker(network, data[trainingIndex], classLabels[trainingIndex]);
-					originalWorkers.add(originalWorker);
-					executor.execute(originalWorker);
-			    	NeuralNetworkWorker mutantworker = new NeuralNetworkWorker(clone, data[trainingIndex], classLabels[trainingIndex]);
-			    	mutantWorkers.add(mutantworker);
-					executor.execute(mutantworker);
-				}
-				executor.shutdown();
-				while(!executor.isTerminated()) {
-					try {
-						Thread.sleep(25);
-					} catch (InterruptedException e) {
-						//do nothing
-					}
-				}
-				//calculate original average error
-				double averageOriginalError = 0.0;
-				for(NeuralNetworkWorker worker : originalWorkers) {
-					averageOriginalError += worker.getError();
-				}
-				averageOriginalError /= originalWorkers.size();
-				network.setAverageError(averageOriginalError);
-				survivors.add(network);
+				// System.out.println("Evaluating network w/ avg error: " +
+				// network.getAverageError());
+				NeuralNetworkWorker worker = new NeuralNetworkWorker(network, data, classLabels, trainingIndices);
+				workers.add(worker);
+				executor.execute(worker);
 
-				//calculate mutant average error
-				double averageMutantError = 0.0;
-				for(NeuralNetworkWorker worker : mutantWorkers) {
-					averageMutantError += worker.getError();
+			}
+			executor.shutdown();
+			while (!executor.isTerminated()) {
+				try {
+					Thread.sleep(25);
+				} catch (InterruptedException e) {
+					// do nothing
 				}
-				averageMutantError /= mutantWorkers.size();
-				if(averageMutantError < averageOriginalError) {
-					//System.out.println("Mutant is better by " + (averageOriginalError - averageMutantError));
-					survivors.add(clone);
-					clone.setAverageError(averageMutantError);
+			}
+			for (NeuralNetworkWorker worker : workers) {
+				GenticNeuralNetwork mutant = worker.getMutant();
+				double averageMutantError = mutant.getAverageError();
+				GenticNeuralNetwork original = worker.getOriginal();
+				double averageOriginalError = original.getAverageError();
+				if (averageMutantError != -1.0 && averageMutantError < averageOriginalError) {
+					// System.out.println("Mutant is better by " + (averageOriginalError -
+					// averageMutantError));
+					survivors.add(mutant);
 					if (averageMutantError < bestAverageError) {
-						bestNetwork = (GenticNeuralNetwork) clone;
+						bestNetwork = (NeuralNetwork) mutant;
 						bestAverageError = averageMutantError;
 					}
-				} else if (averageOriginalError < bestAverageError) {
-					bestNetwork = network;
-					bestAverageError = averageOriginalError;
+				} else {
+					survivors.add(original);
+					if (averageOriginalError != -1.0 && averageOriginalError < bestAverageError) {
+						bestNetwork = original;
+						bestAverageError = averageOriginalError;
+					}
 				}
-				
-				
+
 			}
 			population = survivors;
-			//bestNetwork.printNetwork();
+			// bestNetwork.printNetwork();
 			System.out.println("Best network had average error: " + bestAverageError);
 		}
-		System.out.println("Best network had average error: " + bestAverageError);
-		bestNetwork.printNetwork();
-		for(Integer testingIndex : testingIndices) {
-			bestNetwork.printError(data[testingIndex], classLabels[testingIndex]);
-		}
+		// System.out.println("Best network had average error: " + bestAverageError);
+		// bestNetwork.printNetwork();
+		bestNetwork.test(data, classLabels, confusionMatrix, testingIndices, classLabelConfusionMatrixIndices);
+		printConfusionMatix(confusionMatrixIndicesToClassLabel, confusionMatrix);
 		return bestNetwork;
 	}
 
@@ -188,10 +189,8 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 		currentLayer = new HashSet<Neuron>();
 		currentLayerIds = new HashSet<String>();
 
-		uniqueClassLabels = new HashSet<String>();
-		for (String classLabel : classLabels) {
-			uniqueClassLabels.add(classLabel);
-		}
+		// create output layer
+		uniqueClassLabels = calculateUniqueClassLabels(classLabels);
 		outputs = new HashMap<OutputNeuron, String>();
 		String[] lableStrings = uniqueClassLabels.toArray(new String[] {});
 		for (int i = 0; i < uniqueClassLabels.size(); i++) {
@@ -205,6 +204,14 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 				prev.addNext(next, 0.0);
 			}
 		}
+	}
+
+	private static HashSet<String> calculateUniqueClassLabels(String[] classLabels) {
+		HashSet<String> uniqueClassLabels = new HashSet<String>();
+		for (String classLabel : classLabels) {
+			uniqueClassLabels.add(classLabel);
+		}
+		return uniqueClassLabels;
 	}
 
 	public void mutate() {

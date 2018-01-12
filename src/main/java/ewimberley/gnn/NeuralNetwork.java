@@ -1,6 +1,5 @@
 package ewimberley.gnn;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,11 +8,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-public class NeuralNetwork {
+public abstract class NeuralNetwork extends Classifier {
 
-	protected String[] classLabels;
-	protected double[][] data;
-	protected Set<String> uniqueClassLabels;
 	protected Map<String, Neuron> neurons;
 	protected Set<InputNeuron> inputs;
 	protected Map<Integer, InputNeuron> featureToInputMap;
@@ -21,7 +17,6 @@ public class NeuralNetwork {
 	protected Map<OutputNeuron, String> outputs;
 	protected int numHiddenLayers;
 	protected int numNeuronsPerLayer;
-	private Random rand;
 	private double learningRate;
 	private double annealingRate;
 
@@ -33,30 +28,25 @@ public class NeuralNetwork {
 		featureToInputMap = new HashMap<Integer, InputNeuron>();
 	}
 
-	public double printError(double[] inputData, String expected) {
-//		DecimalFormat df = new DecimalFormat();
-//		df.setMaximumFractionDigits(6);
-		double totalError = 0.0;
-		setupForPredict(inputData);
-		printTrainingExample(inputData, expected);
-		for (Neuron output : outputs.keySet()) {
-			double prob = output.activation();
-			double error = 0.0;
-			
-			if (outputs.get(output).equals(expected)) {
-				error = Math.abs(1.0 - prob);
-			} else {
-				error = Math.abs(0.0 - prob);
+	public void test(double[][] inputData, String[] expected, int[][] confusionMatrix, List<Integer> testingIndices,
+			Map<String, Integer> classLabelConfusionMatrixIndices) {
+		for (Integer testingIndex : testingIndices) {
+			setupForPredict(inputData[testingIndex]);
+			double highestProb = 0.0;
+			String highestProbClass = null;
+			for (Neuron output : outputs.keySet()) {
+				double prob = output.activation();
+				if(prob > highestProb) {
+					highestProb = prob;
+					highestProbClass = outputs.get(output);
+				}
 			}
-			System.out.print(outputs.get(output) + ": " + prob + "\t\t");
-			totalError += error;
+			String expectedClass = expected[testingIndex];
+			System.out.println("Expected " + expectedClass + ", predicted " + highestProbClass + " with probability " + highestProb);
+			confusionMatrix[classLabelConfusionMatrixIndices.get(expectedClass)][classLabelConfusionMatrixIndices.get(highestProbClass)]++;
 		}
-		System.out.println();
-		//printNetwork();
-		return totalError;
 	}
 
-	
 	public double error(double[] inputData, String expected) {
 		double totalError = 0.0;
 		setupForPredict(inputData);
@@ -73,6 +63,7 @@ public class NeuralNetwork {
 		return totalError;
 	}
 
+	// FIXME figure out how to return class and probability
 	public String predict(double[] inputData) {
 		double highestProb = 0.0;
 		Neuron highestProbNeuron = null;
@@ -185,30 +176,12 @@ public class NeuralNetwork {
 		this.numNeuronsPerLayer = numNeuronsPerLayer;
 	}
 
-	public double getRandomDouble() {
-		return rand.nextDouble();
-	}
-
-	public int getNextInt(int min, int max) {
-		return rand.nextInt((max - min) + 1) + min;
-	}
-
 	public double getLearningRate() {
 		return learningRate;
 	}
 
 	public void setLearningRate(double learningRate) {
 		this.learningRate = learningRate;
-	}
-
-	public static void printTrainingExample(double[] features, String label) {
-		for (int i = 0; i < features.length; i++) {
-			if (i > 0) {
-				System.out.print(", ");
-			}
-			System.out.print(features[i]);
-		}
-		System.out.println(", " + label);
 	}
 
 	public double getAnnealingRate() {

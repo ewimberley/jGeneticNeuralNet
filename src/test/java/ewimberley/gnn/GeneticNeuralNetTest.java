@@ -9,8 +9,8 @@ public class GeneticNeuralNetTest {
 		String dataFile = "src/test/resources/iris.data";
 		DataLoader dl = new DataLoader();
 		dl.loadCSVFile(dataFile);
-		NeuralNetwork gnn = new GenticNeuralNetwork(dl.getData(), dl.getClassLabels());
-		NeuralNetwork bestNetwork = GenticNeuralNetwork.train(dl.getData(), dl.getClassLabels(), 100, 1000, 5, 8, 100.0);
+		Classifier gnn = new GenticNeuralNetwork(dl.getData(), dl.getClassLabels());
+		Classifier bestNetwork = GenticNeuralNetwork.train(dl.getData(), dl.getClassLabels(), 500, 500, 5, 8, 100.0);
 	}
 
 }

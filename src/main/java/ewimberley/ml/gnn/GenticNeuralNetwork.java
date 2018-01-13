@@ -14,32 +14,32 @@ import java.util.concurrent.Executors;
 import ewimberley.ml.Classifier;
 import ewimberley.ml.ConfusionMatrix;
 
-public class GenticNeuralNetwork extends NeuralNetwork {
+public class GenticNeuralNetwork<H> extends NeuralNetwork<H> {
 
 	private static final int NUM_THREADS = 100;
 
 	private double averageError;
 
-	public GenticNeuralNetwork(NeuralNetwork toClone) {
+	public GenticNeuralNetwork(NeuralNetwork<H> toClone) {
 		this(toClone.getData(), toClone.getClassLabels());
-		for (Map.Entry<String, Neuron> neuronEntry : toClone.getNeurons().entrySet()) {
+		for (Map.Entry<String, Neuron<H>> neuronEntry : toClone.getNeurons().entrySet()) {
 			String id = neuronEntry.getKey();
-			Neuron neuron = neuronEntry.getValue();
+			Neuron<H> neuron = neuronEntry.getValue();
 			if (neuron instanceof InputNeuron) {
-				InputNeuron clone = new InputNeuron(this, (InputNeuron) neuron);
+				InputNeuron<H> clone = new InputNeuron<H>(this, (InputNeuron<H>) neuron);
 				addInput(clone);
 			} else if (neuron instanceof OutputNeuron) {
-				OutputNeuron clone = new OutputNeuron(this, (OutputNeuron) neuron);
+				OutputNeuron<H> clone = new OutputNeuron<H>(this, (OutputNeuron<H>) neuron);
 				String classLabel = toClone.getOutputs().get(neuron);
 				addOutput(classLabel, clone);
 			} else {
-				Neuron clone = new HiddenNeuron(this, (HiddenNeuron) neuron);
+				Neuron<H> clone = new HiddenNeuron<H>(this, (HiddenNeuron<H>) neuron);
 				neurons.put(id, clone);
 			}
 		}
-		for (Map.Entry<Integer, InputNeuron> inputMappingEntry : toClone.getFeatureToInputMap().entrySet()) {
+		for (Map.Entry<Integer, InputNeuron<H>> inputMappingEntry : toClone.getFeatureToInputMap().entrySet()) {
 			featureToInputMap.put(inputMappingEntry.getKey(),
-					(InputNeuron) neurons.get(inputMappingEntry.getValue().getUuid()));
+					(InputNeuron<H>) neurons.get(inputMappingEntry.getValue().getUuid()));
 		}
 		this.layers = toClone.layers;
 		setLearningRate(toClone.getLearningRate() * (1.0 - toClone.getAnnealingRate()));
@@ -51,7 +51,7 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 		setAnnealingRate(0.000001);
 		this.setData(data);
 		this.setClassLabels(classLabels);
-		this.neurons = new HashMap<String, Neuron>();
+		this.neurons = new HashMap<String, Neuron<H>>();
 		numHiddenLayers = 1; // reasonable default
 		numNeuronsPerLayer = 5; // reasonable default
 		averageError = -1.0;
@@ -80,11 +80,11 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 		}
 
 		double bestAverageError = Double.MAX_VALUE;
-		NeuralNetwork bestNetwork = null;
-		PriorityQueue<GenticNeuralNetwork> population = new PriorityQueue<GenticNeuralNetwork>(
+		NeuralNetwork<Double> bestNetwork = null;
+		PriorityQueue<GenticNeuralNetwork<Double>> population = new PriorityQueue<GenticNeuralNetwork<Double>>(
 				new NeuralNetworkErrorComparator());
 		for (int i = 0; i < numNetworksPerGeneration; i++) {
-			GenticNeuralNetwork network = new GenticNeuralNetwork(data, classLabels);
+			GenticNeuralNetwork<Double> network = new GenticNeuralNetwork<Double>(data, classLabels);
 			network.setLearningRate(learningRate);
 			network.setNumHiddenLayers(numHiddenLayers);
 			network.setNumNeuronsPerLayer(numNeuronsPerLayer);
@@ -95,15 +95,15 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 		}
 		for (int gen = 1; gen <= numGenerations; gen++) {
 			System.out.println("On generation " + gen + " Population size: " + population.size());
-			PriorityQueue<GenticNeuralNetwork> survivors = new PriorityQueue<GenticNeuralNetwork>(
+			PriorityQueue<GenticNeuralNetwork<Double>> survivors = new PriorityQueue<GenticNeuralNetwork<Double>>(
 					new NeuralNetworkErrorComparator());
 			ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
-			List<NeuralNetworkWorker> workers = new ArrayList<NeuralNetworkWorker>();
+			List<NeuralNetworkWorker<Double>> workers = new ArrayList<NeuralNetworkWorker<Double>>();
 			for (int onNetwork = 0; onNetwork < numNetworksPerGeneration; onNetwork++) {
-				GenticNeuralNetwork network = population.poll();
+				GenticNeuralNetwork<Double> network = population.poll();
 				// System.out.println("Evaluating network w/ avg error: " +
 				// network.getAverageError());
-				NeuralNetworkWorker worker = new NeuralNetworkWorker(network, data, classLabels, trainingIndices);
+				NeuralNetworkWorker<Double> worker = new NeuralNetworkWorker<Double>(network, data, classLabels, trainingIndices);
 				workers.add(worker);
 				executor.execute(worker);
 
@@ -116,17 +116,17 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 					// do nothing
 				}
 			}
-			for (NeuralNetworkWorker worker : workers) {
-				GenticNeuralNetwork mutant = worker.getMutant();
+			for (NeuralNetworkWorker<Double> worker : workers) {
+				GenticNeuralNetwork<Double> mutant = worker.getMutant();
 				double averageMutantError = mutant.getAverageError();
-				GenticNeuralNetwork original = worker.getOriginal();
+				GenticNeuralNetwork<Double> original = worker.getOriginal();
 				double averageOriginalError = original.getAverageError();
 				if (averageMutantError != -1.0 && averageMutantError < averageOriginalError) {
 					// System.out.println("Mutant is better by " + (averageOriginalError -
 					// averageMutantError));
 					survivors.add(mutant);
 					if (averageMutantError < bestAverageError) {
-						bestNetwork = (NeuralNetwork) mutant;
+						bestNetwork = (NeuralNetwork<Double>) mutant;
 						bestAverageError = averageMutantError;
 					}
 				} else {
@@ -153,25 +153,25 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 		createInputLayer();
 
 		// create hidden layers with random links
-		Set<Neuron> previousLayer = null;
-		Set<Neuron> currentLayer = new HashSet<Neuron>();
+		Set<Neuron<H>> previousLayer = null;
+		Set<Neuron<H>> currentLayer = new HashSet<Neuron<H>>();
 		Set<String> currentLayerIds = new HashSet<String>();
-		for (InputNeuron input : inputs) {
+		for (InputNeuron<H> input : inputs) {
 			currentLayer.add(input);
 			currentLayerIds.add(input.getUuid());
 		}
 		for (int i = 0; i < numHiddenLayers; i++) {
 			previousLayer = currentLayer;
 			layers.add(currentLayerIds);
-			currentLayer = new HashSet<Neuron>();
+			currentLayer = new HashSet<Neuron<H>>();
 			currentLayerIds = new HashSet<String>();
 			for (int j = 0; j < numNeuronsPerLayer; j++) {
-				Neuron n = createNewRandomNeuron();
+				Neuron<H> n = createNewRandomNeuron();
 				currentLayer.add(n);
 				currentLayerIds.add(n.getUuid());
 			}
-			for (Neuron prev : previousLayer) {
-				for (Neuron next : currentLayer) {
+			for (Neuron<H> prev : previousLayer) {
+				for (Neuron<H> next : currentLayer) {
 					prev.addNext(next, 0.0);
 				}
 			}
@@ -179,25 +179,25 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 
 		previousLayer = currentLayer;
 		layers.add(currentLayerIds);
-		currentLayer = new HashSet<Neuron>();
+		currentLayer = new HashSet<Neuron<H>>();
 		currentLayerIds = new HashSet<String>();
 
 		// create output layer
 		createOutputLayer(previousLayer, currentLayer, currentLayerIds);
 	}
 
-	private void createOutputLayer(Set<Neuron> previousLayer, Set<Neuron> currentLayer, Set<String> currentLayerIds) {
+	private void createOutputLayer(Set<Neuron<H>> previousLayer, Set<Neuron<H>> currentLayer, Set<String> currentLayerIds) {
 		uniqueClassLabels = calculateUniqueClassLabels(getClassLabels());
-		outputs = new HashMap<OutputNeuron, String>();
+		outputs = new HashMap<OutputNeuron<H>, String>();
 		String[] lableStrings = uniqueClassLabels.toArray(new String[] {});
 		for (int i = 0; i < uniqueClassLabels.size(); i++) {
-			OutputNeuron output = new OutputNeuron(this);
+			OutputNeuron<H> output = new OutputNeuron<H>(this);
 			addOutput(lableStrings[i], output);
 			currentLayer.add(output);
 			currentLayerIds.add(output.getUuid());
 		}
-		for (Neuron prev : previousLayer) {
-			for (Neuron next : currentLayer) {
+		for (Neuron<H> prev : previousLayer) {
+			for (Neuron<H> next : currentLayer) {
 				prev.addNext(next, 0.0);
 			}
 		}
@@ -212,7 +212,7 @@ public class GenticNeuralNetwork extends NeuralNetwork {
 	}
 
 	public void mutate() {
-		for (Map.Entry<String, Neuron> neuronEntry : getNeurons().entrySet()) {
+		for (Map.Entry<String, Neuron<H>> neuronEntry : getNeurons().entrySet()) {
 			neuronEntry.getValue().mutate();
 		}
 	}

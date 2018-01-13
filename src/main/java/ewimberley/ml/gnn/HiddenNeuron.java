@@ -2,13 +2,13 @@ package ewimberley.ml.gnn;
 
 import java.text.DecimalFormat;
 
-public class HiddenNeuron extends Neuron {
+public class HiddenNeuron<H> extends Neuron<H> {
 
-	public HiddenNeuron(NeuralNetwork network, HiddenNeuron toClone) {
+	public HiddenNeuron(NeuralNetwork<H> network, HiddenNeuron<H> toClone) {
 		super(network, toClone);
 	}
 	
-	public HiddenNeuron(NeuralNetwork network) {
+	public HiddenNeuron(NeuralNetwork<H> network) {
 		super(network);
 	}
 	
@@ -16,7 +16,7 @@ public class HiddenNeuron extends Neuron {
 		if (!memoized) {
 			double output = 0.0;
 			for (String prevNeuron : prev) {
-				Neuron prevNeuronObj = network.getNeurons().get(prevNeuron);
+				Neuron<H> prevNeuronObj = network.getNeurons().get(prevNeuron);
 				double prevOutput = prevNeuronObj.activation();
 				double prevWeight = prevNeuronObj.getNextWeights().get(this.getUuid());
 				output += prevOutput * prevWeight;

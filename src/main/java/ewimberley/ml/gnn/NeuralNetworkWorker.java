@@ -2,9 +2,9 @@ package ewimberley.ml.gnn;
 
 import java.util.List;
 
-public class NeuralNetworkWorker implements Runnable {
+public class NeuralNetworkWorker<H> implements Runnable {
 
-	private GenticNeuralNetwork original, mutant;
+	private GenticNeuralNetwork<H> original, mutant;
 
 	private double[][] data;
 
@@ -14,7 +14,7 @@ public class NeuralNetworkWorker implements Runnable {
 
 	private double error;
 
-	public NeuralNetworkWorker(GenticNeuralNetwork network, double[][] data, String[] labels, List<Integer> trainingIndices) {
+	public NeuralNetworkWorker(GenticNeuralNetwork<H> network, double[][] data, String[] labels, List<Integer> trainingIndices) {
 		this.original = network;
 		this.data = data;
 		this.trainingIndices = trainingIndices;
@@ -22,7 +22,7 @@ public class NeuralNetworkWorker implements Runnable {
 	}
 
 	public void run() {
-		mutant = new GenticNeuralNetwork(original);
+		mutant = new GenticNeuralNetwork<H>(original);
 		mutant.mutate();
 		double averageOriginalError = 0.0;
 		double averageMutantError = 0.0;
@@ -49,11 +49,11 @@ public class NeuralNetworkWorker implements Runnable {
 		return error;
 	}
 
-	public GenticNeuralNetwork getOriginal() {
+	public GenticNeuralNetwork<H> getOriginal() {
 		return original;
 	}
 
-	public GenticNeuralNetwork getMutant() {
+	public GenticNeuralNetwork<H> getMutant() {
 		return mutant;
 	}
 

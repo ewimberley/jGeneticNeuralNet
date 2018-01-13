@@ -7,13 +7,19 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-public abstract class Neuron implements Cloneable {
+/**
+ * The parent class of all neurons.
+ * 
+ * @author ewimberley
+ *
+ */
+public abstract class Neuron<H> implements Cloneable {
 
 	public static final int NUM_DECIMALS_TO_STRING = 3;
 
 	public static final int NUM_ID_CHARS_TO_STRING = 5;
 
-	protected NeuralNetwork network;
+	protected NeuralNetwork<H> network;
 
 	protected String uuid;
 
@@ -29,7 +35,7 @@ public abstract class Neuron implements Cloneable {
 
 	protected double memoizedActivation;
 
-	public Neuron(NeuralNetwork network, Neuron toClone) {
+	public Neuron(NeuralNetwork network, Neuron<H> toClone) {
 		this(network);
 		this.uuid = toClone.getUuid();
 		for (String nextNeuron : toClone.getNext()) {
@@ -54,12 +60,13 @@ public abstract class Neuron implements Cloneable {
 		// y=(sin(x*pi-pi/2)+1)/2
 		return ((Math.sin(in * Math.PI - Math.PI / 2) + 1) / 2.0);
 	}
-	
+
 	public double arctan(double in) {
-		//y=arctan(x)/Pi+0.5
-		return Math.atan(in)/Math.PI+0.5;
+		// y=arctan(x)/Pi+0.5
+		return Math.atan(in) / Math.PI + 0.5;
 	}
-	
+
+	//public abstract H activation();
 	public abstract double activation();
 
 	public Set<String> getNext() {
@@ -108,9 +115,9 @@ public abstract class Neuron implements Cloneable {
 	public void scramble() {
 		boolean biasNegative = (network.getRandomDouble() > 0.5);
 		setBias(network.getRandomDouble() * network.getLearningRate() * (biasNegative ? -1.0 : 1.0));
-//		setBias(0.0);
+		// setBias(0.0);
 		for (String nextNeuron : nextWeights.keySet()) {
-//			nextWeights.put(nextNeuron, 1.0);
+			// nextWeights.put(nextNeuron, 1.0);
 			boolean weightNegative = (network.getRandomDouble() > 0.5);
 			nextWeights.put(nextNeuron,
 					(network.getRandomDouble() * network.getLearningRate() * (weightNegative ? -1.0 : 1.0)));

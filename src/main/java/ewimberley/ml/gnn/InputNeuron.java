@@ -2,16 +2,16 @@ package ewimberley.ml.gnn;
 
 import java.text.DecimalFormat;
 
-public class InputNeuron extends Neuron {
+public class InputNeuron<H> extends Neuron<H> {
 
 	private double input;
 	
-	public InputNeuron(NeuralNetwork network, InputNeuron toClone) {
+	public InputNeuron(NeuralNetwork<H> network, InputNeuron<H> toClone) {
 		super(network, toClone);
 		this.input = toClone.getInput();
 	}
 	
-	public InputNeuron(NeuralNetwork network) {
+	public InputNeuron(NeuralNetwork<H> network) {
 		super(network);
 	}
 

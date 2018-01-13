@@ -11,13 +11,13 @@ import java.util.Set;
 import ewimberley.ml.Classifier;
 import ewimberley.ml.ConfusionMatrix;
 
-public abstract class NeuralNetwork extends Classifier {
+public abstract class NeuralNetwork<H> extends Classifier {
 
-	protected Map<String, Neuron> neurons;
-	protected Set<InputNeuron> inputs;
-	protected Map<Integer, InputNeuron> featureToInputMap;
+	protected Map<String, Neuron<H>> neurons;
+	protected Set<InputNeuron<H>> inputs;
+	protected Map<Integer, InputNeuron<H>> featureToInputMap;
 	protected List<Set<String>> layers;
-	protected Map<OutputNeuron, String> outputs;
+	protected Map<OutputNeuron<H>, String> outputs;
 	protected int numHiddenLayers;
 	protected int numNeuronsPerLayer;
 	private double learningRate;
@@ -26,9 +26,9 @@ public abstract class NeuralNetwork extends Classifier {
 	public NeuralNetwork() {
 		rand = new Random();
 		layers = new ArrayList<Set<String>>();
-		inputs = new HashSet<InputNeuron>();
-		outputs = new HashMap<OutputNeuron, String>();
-		featureToInputMap = new HashMap<Integer, InputNeuron>();
+		inputs = new HashSet<InputNeuron<H>>();
+		outputs = new HashMap<OutputNeuron<H>, String>();
+		featureToInputMap = new HashMap<Integer, InputNeuron<H>>();
 	}
 
 	public void test(double[][] inputData, String[] expected, ConfusionMatrix cf, List<Integer> testingIndices) {
@@ -36,7 +36,7 @@ public abstract class NeuralNetwork extends Classifier {
 			setupForPredict(inputData[testingIndex]);
 			double highestProb = 0.0;
 			String highestProbClass = null;
-			for (Neuron output : outputs.keySet()) {
+			for (Neuron<H> output : outputs.keySet()) {
 				double prob = output.activation();
 				if(prob > highestProb) {
 					highestProb = prob;
@@ -52,7 +52,7 @@ public abstract class NeuralNetwork extends Classifier {
 	public double error(double[] inputData, String expected) {
 		double totalError = 0.0;
 		setupForPredict(inputData);
-		for (Neuron output : outputs.keySet()) {
+		for (Neuron<H> output : outputs.keySet()) {
 			double prob = output.activation();
 			double error = 0.0;
 			if (outputs.get(output).equals(expected)) {
@@ -68,9 +68,9 @@ public abstract class NeuralNetwork extends Classifier {
 	// FIXME figure out how to return class and probability
 	public String predict(double[] inputData) {
 		double highestProb = 0.0;
-		Neuron highestProbNeuron = null;
+		Neuron<H> highestProbNeuron = null;
 		setupForPredict(inputData);
-		for (Neuron output : outputs.keySet()) {
+		for (Neuron<H> output : outputs.keySet()) {
 			double prob = output.activation();
 			if (prob > highestProb) {
 				highestProbNeuron = output;
@@ -82,44 +82,44 @@ public abstract class NeuralNetwork extends Classifier {
 	}
 
 	private void setupForPredict(double[] inputData) {
-		for (Map.Entry<String, Neuron> neuronEntry : getNeurons().entrySet()) {
+		for (Map.Entry<String, Neuron<H>> neuronEntry : getNeurons().entrySet()) {
 			neuronEntry.getValue().resetMemoization();
 		}
 		for (int i = 0; i < inputData.length; i++) {
-			InputNeuron in = featureToInputMap.get(i);
+			InputNeuron<H> in = featureToInputMap.get(i);
 			in.setInput(inputData[i]);
 		}
 	}
 
 	protected void createInputLayer() {
 		int numInputs = getData()[0].length;
-		inputs = new HashSet<InputNeuron>();
-		featureToInputMap = new HashMap<Integer, InputNeuron>();
+		inputs = new HashSet<InputNeuron<H>>();
+		featureToInputMap = new HashMap<Integer, InputNeuron<H>>();
 		for (int i = 0; i < numInputs; i++) {
-			InputNeuron input = new InputNeuron(this);
+			InputNeuron<H> input = new InputNeuron<H>(this);
 			featureToInputMap.put(i, input);
 			addInput(input);
 		}
 	}
 
-	protected void addInput(InputNeuron input) {
+	protected void addInput(InputNeuron<H> input) {
 		inputs.add(input);
 		neurons.put(input.getUuid(), input);
 	}
 
-	protected Neuron createNewRandomNeuron() {
-		Neuron n = new HiddenNeuron(this);
+	protected Neuron<H> createNewRandomNeuron() {
+		Neuron<H> n = new HiddenNeuron<H>(this);
 		neurons.put(n.getUuid(), n);
 		return n;
 	}
 
-	protected void addOutput(String classLabel, OutputNeuron output) {
+	protected void addOutput(String classLabel, OutputNeuron<H> output) {
 		outputs.put(output, classLabel);
 		neurons.put(output.getUuid(), output);
 	}
 
 	public void scramble() {
-		for (Neuron neuron : getNeurons().values()) {
+		for (Neuron<H> neuron : getNeurons().values()) {
 			neuron.scramble();
 		}
 	}
@@ -127,32 +127,32 @@ public abstract class NeuralNetwork extends Classifier {
 	public void printNetwork() {
 		System.out.println("***********************************");
 		System.out.println("Input Layer:");
-		for (InputNeuron input : inputs) {
+		for (InputNeuron<H> input : inputs) {
 			System.out.println(" " + input.toString());
 		}
 		for (int i = 1; i < layers.size(); i++) {
 			Set<String> layer = layers.get(i);
 			System.out.println("Hidden Layer " + i + ":");
 			for (String neuronId : layer) {
-				Neuron n = neurons.get(neuronId);
+				Neuron<H> n = neurons.get(neuronId);
 				System.out.println(" " + n.toString());
 			}
 		}
 		System.out.println("Output Layer:");
-		for (Neuron output : outputs.keySet()) {
+		for (Neuron<H> output : outputs.keySet()) {
 			System.out.println(" " + output.toString());
 		}
 	}
 
-	public Map<String, Neuron> getNeurons() {
+	public Map<String, Neuron<H>> getNeurons() {
 		return neurons;
 	}
 
-	public Set<InputNeuron> getInputs() {
+	public Set<InputNeuron<H>> getInputs() {
 		return inputs;
 	}
 
-	public Map<OutputNeuron, String> getOutputs() {
+	public Map<OutputNeuron<H>, String> getOutputs() {
 		return outputs;
 	}
 
@@ -194,7 +194,7 @@ public abstract class NeuralNetwork extends Classifier {
 		this.annealingRate = annealingRate;
 	}
 
-	public Map<Integer, InputNeuron> getFeatureToInputMap() {
+	public Map<Integer, InputNeuron<H>> getFeatureToInputMap() {
 		return featureToInputMap;
 	}
 

@@ -2,7 +2,7 @@ package ewimberley.ml.gnn;
 
 import java.text.DecimalFormat;
 
-public class InputNeuron<H> extends Neuron<H> {
+public class InputNeuron<H> extends NeuronImpl<H> {
 
 	private H input;
 	
@@ -15,7 +15,6 @@ public class InputNeuron<H> extends Neuron<H> {
 		super(network);
 	}
 
-	@Override
 	public H activation() {
 		return input;
 	}
@@ -31,8 +30,8 @@ public class InputNeuron<H> extends Neuron<H> {
 	@Override
 	public String toString() {
 		DecimalFormat df = new DecimalFormat();
-		df.setMaximumFractionDigits(Neuron.NUM_DECIMALS_TO_STRING);
-		String output = "Input neuron " + Neuron.truncatedUUID(getUuid()) + " and next [";
+		df.setMaximumFractionDigits(NeuronImpl.NUM_DECIMALS_TO_STRING);
+		String output = "Input neuron " + NeuronImpl.truncatedUUID(getUuid()) + " and next [";
 		boolean first = true;
 		for (String nextId : next) {
 			if (!first) {

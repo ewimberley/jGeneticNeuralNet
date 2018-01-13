@@ -9,7 +9,7 @@ public class ContinuousHiddenNeuronTest {
 
 	@Test
 	public void testSinusoidal() {
-		Neuron<Double> n = new ContinuousHiddenNeuron(null);
+		NeuronImpl<Double> n = new ContinuousHiddenNeuron(null);
 		assertEquals(0.0, n.sinusoidal(0.0), 0.001);
 		assertEquals(0.146, n.sinusoidal(0.25), 0.001);
 		assertEquals(0.5, n.sinusoidal(0.5), 0.001);

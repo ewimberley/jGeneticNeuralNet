@@ -20,6 +20,7 @@ import ewimberley.ml.gnn.InputNeuron;
 import ewimberley.ml.gnn.NeuralNetwork;
 import ewimberley.ml.gnn.NeuralNetworkErrorComparator;
 import ewimberley.ml.gnn.Neuron;
+import ewimberley.ml.gnn.NeuronImpl;
 import ewimberley.ml.gnn.OutputNeuron;
 
 public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
@@ -41,7 +42,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 				String classLabel = toClone.getOutputs().get(neuron);
 				addOutput(classLabel, clone);
 			} else {
-				Neuron<Double> clone = new ContinuousHiddenNeuron(this, (ContinuousHiddenNeuron) neuron);
+				NeuronImpl<Double> clone = new ContinuousHiddenNeuron(this, (ContinuousHiddenNeuron) neuron);
 				neurons.put(id, clone);
 			}
 		}

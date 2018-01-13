@@ -84,6 +84,7 @@ public interface Neuron<H> {
 	 */
 	void resetMemoization();
 
+	//XXX push this down to a genetic neural network specific neuron class/interface.
 	/**
 	 * Randomly alter this neuron by a small amount.
 	 */

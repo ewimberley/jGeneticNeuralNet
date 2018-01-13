@@ -36,7 +36,7 @@ public abstract class Learner {
 	}
 
 	/**
-	 * Get a random number within a range.
+	 * Get a random number within a range (inclusive).
 	 * 
 	 * @param min
 	 *            the minimum number in the range
@@ -44,7 +44,8 @@ public abstract class Learner {
 	 *            the maximum nunber in the range
 	 * @return a random integer
 	 */
-	public int getNextInt(int min, int max) {
+	//XXX test this
+	public int getRandInt(int min, int max) {
 		return rand.nextInt((max - min) + 1) + min;
 	}
 

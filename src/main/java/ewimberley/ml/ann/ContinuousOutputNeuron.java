@@ -1,11 +1,6 @@
-package ewimberley.ml.ann.gnn;
+package ewimberley.ml.ann;
 
 import java.text.DecimalFormat;
-
-import ewimberley.ml.ann.NeuralNetwork;
-import ewimberley.ml.ann.Neuron;
-import ewimberley.ml.ann.NeuronImpl;
-import ewimberley.ml.ann.OutputNeuron;
 
 public class ContinuousOutputNeuron extends ContinuousNeuron implements OutputNeuron<Double> {
 
@@ -23,22 +18,6 @@ public class ContinuousOutputNeuron extends ContinuousNeuron implements OutputNe
 		df.setMaximumFractionDigits(NeuronImpl.NUM_DECIMALS_TO_STRING);
 		return "Output neuron " + NeuronImpl.truncatedUUID(getUuid()) + " associted with "
 				+ network.getOutputs().get(this) + " with bias " + df.format(getBias()) + "\t->\t" + memoizedActivation;
-	}
-
-	public Double activation() {
-		if (!memoized) {
-			double output = 0.0;
-			for (String prevNeuron : prev) {
-				Neuron<Double> prevNeuronObj = network.getNeurons().get(prevNeuron);
-				double prevOutput = prevNeuronObj.activation();
-				double prevWeight = prevNeuronObj.getNextWeights().get(this.getUuid());
-				output += prevOutput * prevWeight;
-			}
-			output += bias;
-			memoizedActivation = arctan(output);
-			memoized = true;
-		}
-		return memoizedActivation;
 	}
 
 }

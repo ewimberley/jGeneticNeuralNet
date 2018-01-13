@@ -13,15 +13,15 @@ import java.util.concurrent.Executors;
 
 import ewimberley.ml.ConfusionMatrix;
 import ewimberley.ml.Learner;
+import ewimberley.ml.ann.ContinuousHiddenNeuron;
+import ewimberley.ml.ann.ContinuousOutputNeuron;
 import ewimberley.ml.ann.InputNeuron;
 import ewimberley.ml.ann.NeuralNetwork;
 import ewimberley.ml.ann.Neuron;
 import ewimberley.ml.ann.NeuronImpl;
 import ewimberley.ml.ann.OutputNeuron;
-import ewimberley.ml.ann.gnn.ContinuousHiddenNeuron;
-import ewimberley.ml.ann.gnn.ContinuousOutputNeuron;
 import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
-import ewimberley.ml.ann.gnn.NeuralNetworkErrorComparator;
+import ewimberley.ml.ann.gnn.GenticNeuralNetworkErrorComparator;
 
 public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 	
@@ -79,7 +79,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 		double bestAverageError = Double.MAX_VALUE;
 		NeuralNetwork<Double> bestNetwork = null;
 		PriorityQueue<ClassificationGenticNeuralNetwork> population = new PriorityQueue<ClassificationGenticNeuralNetwork>(
-				new NeuralNetworkErrorComparator<Double>());
+				new GenticNeuralNetworkErrorComparator<Double>());
 		for (int i = 0; i < numNetworksPerGeneration; i++) {
 			ClassificationGenticNeuralNetwork network = new ClassificationGenticNeuralNetwork(data, classLabels);
 			network.setLearningRate(learningRate);
@@ -88,12 +88,13 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 			network.init();
 			network.scramble();
 			population.add(network);
+			bestNetwork = network;
 			// network.printNetwork();
 		}
 		for (int gen = 1; gen <= numGenerations; gen++) {
 			System.out.println("On generation " + gen + " Population size: " + population.size());
 			PriorityQueue<ClassificationGenticNeuralNetwork> survivors = new PriorityQueue<ClassificationGenticNeuralNetwork>(
-					new NeuralNetworkErrorComparator<Double>());
+					new GenticNeuralNetworkErrorComparator<Double>());
 			ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 			List<ClassificationGenticNeuralNetworkWorker> workers = new ArrayList<ClassificationGenticNeuralNetworkWorker>();
 			for (int onNetwork = 0; onNetwork < numNetworksPerGeneration; onNetwork++) {
@@ -198,6 +199,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 				prev.addNext(next, 0.0);
 			}
 		}
+		getLayers().add(currentLayerIds);
 	}
 	
 	public void test(double[][] inputData, String[] expected, ConfusionMatrix cf, List<Integer> testingIndices) {

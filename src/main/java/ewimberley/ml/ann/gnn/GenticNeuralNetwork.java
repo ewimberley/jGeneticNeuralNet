@@ -7,7 +7,7 @@ import java.util.Map;
 import ewimberley.ml.ann.NeuralNetwork;
 import ewimberley.ml.ann.Neuron;
 
-public class GenticNeuralNetwork<H> extends NeuralNetwork<H> {
+public abstract class GenticNeuralNetwork<H> extends NeuralNetwork<H> {
 
 	protected static final int NUM_THREADS = 100;
 

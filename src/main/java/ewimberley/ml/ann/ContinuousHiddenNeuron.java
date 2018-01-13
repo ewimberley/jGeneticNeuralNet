@@ -4,11 +4,11 @@ public class ContinuousHiddenNeuron extends ContinuousNeuron implements HiddenNe
 
 	private static final double PROB_MUTATE_ACTIVATION_FUNC = 0.03;
 
-	public ContinuousHiddenNeuron(NeuralNetwork<Double> network, ContinuousHiddenNeuron toClone) {
+	public ContinuousHiddenNeuron(NeuralNetwork<Double,?> network, ContinuousHiddenNeuron toClone) {
 		super(network, toClone);
 	}
 
-	public ContinuousHiddenNeuron(NeuralNetwork<Double> network) {
+	public ContinuousHiddenNeuron(NeuralNetwork<Double,?> network) {
 		super(network);
 	}
 

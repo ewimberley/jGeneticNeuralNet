@@ -9,11 +9,14 @@ import java.util.Set;
  * @author ewimberley
  *
  */
-public abstract class Learner {
+public abstract class Learner<Y> {
 
-	private String[] classLabels;
+	private Y[] y;
+	
 	private double[][] data;
+	
 	protected Set<String> uniqueClassLabels;
+	
 	protected Random rand;
 
 	public static void printTrainingExample(double[] features, String label) {
@@ -61,12 +64,12 @@ public abstract class Learner {
 		this.data = data;
 	}
 
-	public String[] getClassLabels() {
-		return classLabels;
+	public Y[] getY() {
+		return y;
 	}
 
-	public void setClassLabels(String[] classLabels) {
-		this.classLabels = classLabels;
+	public void setY(Y[] y) {
+		this.y = y;
 	}
 
 }

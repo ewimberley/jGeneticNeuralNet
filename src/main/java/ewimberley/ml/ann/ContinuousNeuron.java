@@ -28,13 +28,13 @@ public abstract class ContinuousNeuron extends NeuronImpl<Double> {
 	 * @param toClone
 	 *            the neuron to make a clone of
 	 */
-	public ContinuousNeuron(NeuralNetwork<Double> network, ContinuousNeuron toClone) {
+	public ContinuousNeuron(NeuralNetwork<Double,?> network, ContinuousNeuron toClone) {
 		super(network, toClone);
 		this.bias = toClone.getBias();
 		this.activationFunction = ActivationFunction.ARCTAN;
 	}
 
-	public ContinuousNeuron(NeuralNetwork<Double> network) {
+	public ContinuousNeuron(NeuralNetwork<Double,?> network) {
 		super(network);
 		this.activationFunction = ActivationFunction.ARCTAN;
 	}

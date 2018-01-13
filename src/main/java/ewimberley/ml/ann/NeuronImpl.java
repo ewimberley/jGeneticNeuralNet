@@ -18,7 +18,7 @@ public abstract class NeuronImpl<H> implements Neuron<H> {
 
 	public static final int NUM_ID_CHARS_TO_STRING = 5;
 
-	protected NeuralNetwork<H> network;
+	protected NeuralNetwork<H,?> network;
 
 	protected String uuid;
 
@@ -38,7 +38,7 @@ public abstract class NeuronImpl<H> implements Neuron<H> {
 	 * @param toClone
 	 *            the neuron to make a clone of
 	 */
-	public NeuronImpl(NeuralNetwork<H> network, NeuronImpl<H> toClone) {
+	public NeuronImpl(NeuralNetwork<H,?> network, NeuronImpl<H> toClone) {
 		this(network);
 		this.uuid = toClone.getUuid();
 		for (String nextNeuron : toClone.getNext()) {
@@ -50,7 +50,7 @@ public abstract class NeuronImpl<H> implements Neuron<H> {
 		}
 	}
 
-	public NeuronImpl(NeuralNetwork<H> network) {
+	public NeuronImpl(NeuralNetwork<H,?> network) {
 		next = new HashSet<String>();
 		prev = new HashSet<String>();
 		nextWeights = new HashMap<String, Double>();

@@ -7,30 +7,22 @@ import java.util.Map;
 import ewimberley.ml.ann.NeuralNetwork;
 import ewimberley.ml.ann.Neuron;
 
-public abstract class GenticNeuralNetwork<H> extends NeuralNetwork<H> {
+public abstract class GenticNeuralNetwork<H, Y> extends NeuralNetwork<H, Y> {
 
 	protected static final int NUM_THREADS = 100;
 
 	private double averageError;
 
-	public GenticNeuralNetwork(double[][] data, String[] classLabels) {
+	public GenticNeuralNetwork(double[][] data, Y[] y) {
 		super();
 		setLearningRate(0.10); // reasonable default
 		setAnnealingRate(0.000001);
 		this.setData(data);
-		this.setClassLabels(classLabels);
+		this.setY(y);
 		this.neurons = new HashMap<String, Neuron<H>>();
 		numHiddenLayers = 1; // reasonable default
 		numNeuronsPerLayer = 5; // reasonable default
 		averageError = -1.0;
-	}
-
-	protected static HashSet<String> calculateUniqueClassLabels(String[] classLabels) {
-		HashSet<String> uniqueClassLabels = new HashSet<String>();
-		for (String classLabel : classLabels) {
-			uniqueClassLabels.add(classLabel);
-		}
-		return uniqueClassLabels;
 	}
 
 	public void mutate() {

@@ -6,12 +6,12 @@ public class InputNeuron<H> extends NeuronImpl<H> {
 
 	private H input;
 	
-	public InputNeuron(NeuralNetwork<H> network, InputNeuron<H> toClone) {
+	public InputNeuron(NeuralNetwork<H,?> network, InputNeuron<H> toClone) {
 		super(network, toClone);
 		this.input = toClone.getInput();
 	}
 	
-	public InputNeuron(NeuralNetwork<H> network) {
+	public InputNeuron(NeuralNetwork<H,?> network) {
 		super(network);
 	}
 

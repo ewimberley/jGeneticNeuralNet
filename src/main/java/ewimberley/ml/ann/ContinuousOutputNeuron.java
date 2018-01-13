@@ -4,11 +4,11 @@ import java.text.DecimalFormat;
 
 public class ContinuousOutputNeuron extends ContinuousNeuron implements OutputNeuron<Double> {
 
-	public ContinuousOutputNeuron(NeuralNetwork<Double> network, ContinuousOutputNeuron toClone) {
+	public ContinuousOutputNeuron(NeuralNetwork<Double,?> network, ContinuousOutputNeuron toClone) {
 		super(network, toClone);
 	}
 
-	public ContinuousOutputNeuron(NeuralNetwork<Double> network) {
+	public ContinuousOutputNeuron(NeuralNetwork<Double,?> network) {
 		super(network);
 	}
 

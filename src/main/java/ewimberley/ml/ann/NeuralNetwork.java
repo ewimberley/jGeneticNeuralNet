@@ -10,23 +10,38 @@ import java.util.Set;
 
 import ewimberley.ml.Learner;
 
-public abstract class NeuralNetwork<H> extends Learner {
+/**
+ * The parent class of all neural networks.
+ * @author ewimberley
+ *
+ * @param <H> the output of activation functions
+ * @param <Y> the type being predicted
+ */
+public abstract class NeuralNetwork<H, Y> extends Learner<Y> {
 
 	protected Map<String, Neuron<H>> neurons;
+	
 	protected Set<InputNeuron<H>> inputs;
+	
 	protected Map<Integer, InputNeuron<H>> featureToInputMap;
+	
 	private List<Set<String>> layers;
-	protected Map<OutputNeuron<H>, String> outputs;
+	
+	protected Map<OutputNeuron<H>, Y> outputs;
+	
 	protected int numHiddenLayers;
+	
 	protected int numNeuronsPerLayer;
+	
 	private double learningRate;
+	
 	private double annealingRate;
 
 	public NeuralNetwork() {
 		rand = new Random();
 		layers = new ArrayList<Set<String>>();
 		inputs = new HashSet<InputNeuron<H>>();
-		outputs = new HashMap<OutputNeuron<H>, String>();
+		outputs = new HashMap<OutputNeuron<H>, Y>();
 		featureToInputMap = new HashMap<Integer, InputNeuron<H>>();
 	}
 
@@ -45,9 +60,10 @@ public abstract class NeuralNetwork<H> extends Learner {
 		inputs.add(input);
 		neurons.put(input.getUuid(), input);
 	}
-
-	protected void addOutput(String classLabel, OutputNeuron<H> output) {
-		outputs.put(output, classLabel);
+	
+	protected void addOutput(Y y, OutputNeuron<H> output) {
+		//FIXME only used for classification?
+		outputs.put(output, y);
 		neurons.put(output.getUuid(), output);
 	}
 
@@ -85,7 +101,7 @@ public abstract class NeuralNetwork<H> extends Learner {
 		return inputs;
 	}
 
-	public Map<OutputNeuron<H>, String> getOutputs() {
+	public Map<OutputNeuron<H>, Y> getOutputs() {
 		return outputs;
 	}
 

@@ -9,7 +9,7 @@ import java.util.Set;
  * @author ewimberley
  *
  */
-public abstract class Classifier {
+public abstract class Learner {
 
 	private String[] classLabels;
 	private double[][] data;
@@ -48,7 +48,7 @@ public abstract class Classifier {
 		return rand.nextInt((max - min) + 1) + min;
 	}
 
-	public Classifier() {
+	public Learner() {
 		super();
 	}
 

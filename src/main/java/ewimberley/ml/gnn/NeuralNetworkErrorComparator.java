@@ -2,9 +2,9 @@ package ewimberley.ml.gnn;
 
 import java.util.Comparator;
 
-public class NeuralNetworkErrorComparator implements Comparator<GenticNeuralNetwork> {
+public class NeuralNetworkErrorComparator<H> implements Comparator<GenticNeuralNetwork<H>> {
 
-	public int compare(GenticNeuralNetwork c1, GenticNeuralNetwork c2) {
+	public int compare(GenticNeuralNetwork<H> c1, GenticNeuralNetwork<H> c2) {
 		if(c1.getAverageError() < c2.getAverageError()) {
 			return -1;
 		} else if(c1.getAverageError() > c2.getAverageError()) {

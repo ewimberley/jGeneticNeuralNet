@@ -8,10 +8,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import ewimberley.ml.Classifier;
-import ewimberley.ml.ConfusionMatrix;
+import ewimberley.ml.Learner;
 
-public abstract class NeuralNetwork<H> extends Classifier {
+public abstract class NeuralNetwork<H> extends Learner {
 
 	protected Map<String, Neuron<H>> neurons;
 	protected Set<InputNeuron<H>> inputs;
@@ -31,66 +30,6 @@ public abstract class NeuralNetwork<H> extends Classifier {
 		featureToInputMap = new HashMap<Integer, InputNeuron<H>>();
 	}
 
-	public void test(double[][] inputData, String[] expected, ConfusionMatrix cf, List<Integer> testingIndices) {
-		for (Integer testingIndex : testingIndices) {
-			setupForPredict(inputData[testingIndex]);
-			double highestProb = 0.0;
-			String highestProbClass = null;
-			for (Neuron<H> output : outputs.keySet()) {
-				double prob = output.activation();
-				if(prob > highestProb) {
-					highestProb = prob;
-					highestProbClass = outputs.get(output);
-				}
-			}
-			String expectedClass = expected[testingIndex];
-			System.out.println("Expected " + expectedClass + ", predicted " + highestProbClass + " with probability " + highestProb);
-			cf.getConfusionMatrix()[cf.getClassLabelConfusionMatrixIndices().get(expectedClass)][cf.getClassLabelConfusionMatrixIndices().get(highestProbClass)]++;
-		}
-	}
-
-	public double error(double[] inputData, String expected) {
-		double totalError = 0.0;
-		setupForPredict(inputData);
-		for (Neuron<H> output : outputs.keySet()) {
-			double prob = output.activation();
-			double error = 0.0;
-			if (outputs.get(output).equals(expected)) {
-				error = Math.abs(1.0 - prob);
-			} else {
-				error = Math.abs(0.0 - prob);
-			}
-			totalError += error;
-		}
-		return totalError;
-	}
-
-	// FIXME figure out how to return class and probability
-	public String predict(double[] inputData) {
-		double highestProb = 0.0;
-		Neuron<H> highestProbNeuron = null;
-		setupForPredict(inputData);
-		for (Neuron<H> output : outputs.keySet()) {
-			double prob = output.activation();
-			if (prob > highestProb) {
-				highestProbNeuron = output;
-				highestProb = prob;
-			}
-		}
-		System.out.println("Predicted class is " + outputs.get(highestProbNeuron) + " with prob value " + highestProb);
-		return outputs.get(highestProbNeuron);
-	}
-
-	private void setupForPredict(double[] inputData) {
-		for (Map.Entry<String, Neuron<H>> neuronEntry : getNeurons().entrySet()) {
-			neuronEntry.getValue().resetMemoization();
-		}
-		for (int i = 0; i < inputData.length; i++) {
-			InputNeuron<H> in = featureToInputMap.get(i);
-			in.setInput(inputData[i]);
-		}
-	}
-
 	protected void createInputLayer() {
 		int numInputs = getData()[0].length;
 		inputs = new HashSet<InputNeuron<H>>();
@@ -105,12 +44,6 @@ public abstract class NeuralNetwork<H> extends Classifier {
 	protected void addInput(InputNeuron<H> input) {
 		inputs.add(input);
 		neurons.put(input.getUuid(), input);
-	}
-
-	protected Neuron<H> createNewRandomNeuron() {
-		Neuron<H> n = new HiddenNeuron<H>(this);
-		neurons.put(n.getUuid(), n);
-		return n;
 	}
 
 	protected void addOutput(String classLabel, OutputNeuron<H> output) {

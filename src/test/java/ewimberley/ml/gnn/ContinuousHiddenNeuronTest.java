@@ -5,14 +5,11 @@ import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
 
-import ewimberley.ml.gnn.HiddenNeuron;
-import ewimberley.ml.gnn.Neuron;
-
-public class NeuronTest {
+public class ContinuousHiddenNeuronTest {
 
 	@Test
 	public void testSinusoidal() {
-		Neuron n = new HiddenNeuron(null);
+		Neuron<Double> n = new ContinuousHiddenNeuron(null);
 		assertEquals(0.0, n.sinusoidal(0.0), 0.001);
 		assertEquals(0.146, n.sinusoidal(0.25), 0.001);
 		assertEquals(0.5, n.sinusoidal(0.5), 0.001);
@@ -22,8 +19,8 @@ public class NeuronTest {
 	
 	@Test
 	public void testUUID() {
-		Neuron n1 = new HiddenNeuron(null);
-		Neuron n2 = new HiddenNeuron(null);
+		Neuron<Double> n1 = new ContinuousHiddenNeuron(null);
+		Neuron<Double> n2 = new ContinuousHiddenNeuron(null);
 		assertNotEquals(n1.getUuid(), n2.getUuid());
 	}
 

@@ -35,7 +35,7 @@ public abstract class Neuron<H> implements Cloneable {
 
 	protected double memoizedActivation;
 
-	public Neuron(NeuralNetwork network, Neuron<H> toClone) {
+	public Neuron(NeuralNetwork<H> network, Neuron<H> toClone) {
 		this(network);
 		this.uuid = toClone.getUuid();
 		for (String nextNeuron : toClone.getNext()) {
@@ -48,7 +48,7 @@ public abstract class Neuron<H> implements Cloneable {
 		this.bias = toClone.getBias();
 	}
 
-	public Neuron(NeuralNetwork network) {
+	public Neuron(NeuralNetwork<H> network) {
 		next = new HashSet<String>();
 		prev = new HashSet<String>();
 		nextWeights = new HashMap<String, Double>();
@@ -66,14 +66,13 @@ public abstract class Neuron<H> implements Cloneable {
 		return Math.atan(in) / Math.PI + 0.5;
 	}
 
-	//public abstract H activation();
-	public abstract double activation();
+	public abstract H activation();
 
 	public Set<String> getNext() {
 		return next;
 	}
 
-	public void addNext(Neuron next, double weight) {
+	public void addNext(Neuron<H> next, double weight) {
 		addNext(next.getUuid(), weight);
 	}
 

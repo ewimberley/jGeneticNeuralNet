@@ -4,7 +4,7 @@ import java.text.DecimalFormat;
 
 public class InputNeuron<H> extends Neuron<H> {
 
-	private double input;
+	private H input;
 	
 	public InputNeuron(NeuralNetwork<H> network, InputNeuron<H> toClone) {
 		super(network, toClone);
@@ -16,15 +16,15 @@ public class InputNeuron<H> extends Neuron<H> {
 	}
 
 	@Override
-	public double activation() {
+	public H activation() {
 		return input;
 	}
 
-	public double getInput() {
+	public H getInput() {
 		return input;
 	}
 
-	public void setInput(double input) {
+	public void setInput(H input) {
 		this.input = input;
 	}
 	

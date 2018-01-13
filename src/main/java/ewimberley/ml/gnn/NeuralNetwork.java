@@ -15,7 +15,7 @@ public abstract class NeuralNetwork<H> extends Learner {
 	protected Map<String, Neuron<H>> neurons;
 	protected Set<InputNeuron<H>> inputs;
 	protected Map<Integer, InputNeuron<H>> featureToInputMap;
-	protected List<Set<String>> layers;
+	private List<Set<String>> layers;
 	protected Map<OutputNeuron<H>, String> outputs;
 	protected int numHiddenLayers;
 	protected int numNeuronsPerLayer;
@@ -129,6 +129,14 @@ public abstract class NeuralNetwork<H> extends Learner {
 
 	public Map<Integer, InputNeuron<H>> getFeatureToInputMap() {
 		return featureToInputMap;
+	}
+
+	public List<Set<String>> getLayers() {
+		return layers;
+	}
+
+	public void setLayers(List<Set<String>> layers) {
+		this.layers = layers;
 	}
 
 }

@@ -1,4 +1,4 @@
-package ewimberley.ml.gnn;
+package ewimberley.ml.gnn.classifier;
 
 import java.util.List;
 

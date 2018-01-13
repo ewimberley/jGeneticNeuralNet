@@ -1,4 +1,4 @@
-package ewimberley.ml.gnn;
+package ewimberley.ml.gnn.classifier;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,6 +13,14 @@ import java.util.concurrent.Executors;
 
 import ewimberley.ml.ConfusionMatrix;
 import ewimberley.ml.Learner;
+import ewimberley.ml.gnn.ContinuousHiddenNeuron;
+import ewimberley.ml.gnn.ContinuousOutputNeuron;
+import ewimberley.ml.gnn.GenticNeuralNetwork;
+import ewimberley.ml.gnn.InputNeuron;
+import ewimberley.ml.gnn.NeuralNetwork;
+import ewimberley.ml.gnn.NeuralNetworkErrorComparator;
+import ewimberley.ml.gnn.Neuron;
+import ewimberley.ml.gnn.OutputNeuron;
 
 public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 	
@@ -41,7 +49,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 			featureToInputMap.put(inputMappingEntry.getKey(),
 					(InputNeuron<Double>) neurons.get(inputMappingEntry.getValue().getUuid()));
 		}
-		this.layers = toClone.layers;
+		this.setLayers(toClone.getLayers());
 		setLearningRate(toClone.getLearningRate() * (1.0 - toClone.getAnnealingRate()));
 	}
 
@@ -150,7 +158,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 		}
 		for (int i = 0; i < numHiddenLayers; i++) {
 			previousLayer = currentLayer;
-			layers.add(currentLayerIds);
+			getLayers().add(currentLayerIds);
 			currentLayer = new HashSet<Neuron<Double>>();
 			currentLayerIds = new HashSet<String>();
 			for (int j = 0; j < numNeuronsPerLayer; j++) {
@@ -166,7 +174,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 		}
 
 		previousLayer = currentLayer;
-		layers.add(currentLayerIds);
+		getLayers().add(currentLayerIds);
 		currentLayer = new HashSet<Neuron<Double>>();
 		currentLayerIds = new HashSet<String>();
 

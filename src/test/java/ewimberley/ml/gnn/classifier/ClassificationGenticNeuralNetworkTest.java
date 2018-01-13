@@ -1,9 +1,10 @@
-package ewimberley.ml.gnn;
+package ewimberley.ml.gnn.classifier;
 
 import org.junit.Test;
 
 import ewimberley.ml.DataLoader;
 import ewimberley.ml.Learner;
+import ewimberley.ml.gnn.classifier.ClassificationGenticNeuralNetwork;
 
 public class ClassificationGenticNeuralNetworkTest {
 

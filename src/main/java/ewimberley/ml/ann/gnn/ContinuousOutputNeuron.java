@@ -1,6 +1,11 @@
-package ewimberley.ml.gnn;
+package ewimberley.ml.ann.gnn;
 
 import java.text.DecimalFormat;
+
+import ewimberley.ml.ann.NeuralNetwork;
+import ewimberley.ml.ann.Neuron;
+import ewimberley.ml.ann.NeuronImpl;
+import ewimberley.ml.ann.OutputNeuron;
 
 public class ContinuousOutputNeuron extends ContinuousNeuron implements OutputNeuron<Double> {
 

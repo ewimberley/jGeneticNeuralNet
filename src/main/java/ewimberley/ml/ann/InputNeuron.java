@@ -1,4 +1,4 @@
-package ewimberley.ml.gnn;
+package ewimberley.ml.ann;
 
 import java.text.DecimalFormat;
 
@@ -43,6 +43,19 @@ public class InputNeuron<H> extends NeuronImpl<H> {
 		}
 		output += "]\t<-\t" + input;
 		return output;
+	}
+
+	public void mutate() {
+		//do nothing
+	}
+
+	public void scramble() {
+		//note that input neurons have no bias
+		for (String nextNeuron : nextWeights.keySet()) {
+			boolean weightNegative = (network.getRandomDouble() > 0.5);
+			nextWeights.put(nextNeuron,
+					(network.getRandomDouble() * network.getLearningRate() * (weightNegative ? -1.0 : 1.0)));
+		}
 	}
 
 }

@@ -1,4 +1,4 @@
-package ewimberley.ml.gnn.classifier;
+package ewimberley.ml.ann.gnn.classifier;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,15 +13,15 @@ import java.util.concurrent.Executors;
 
 import ewimberley.ml.ConfusionMatrix;
 import ewimberley.ml.Learner;
-import ewimberley.ml.gnn.ContinuousHiddenNeuron;
-import ewimberley.ml.gnn.ContinuousOutputNeuron;
-import ewimberley.ml.gnn.GenticNeuralNetwork;
-import ewimberley.ml.gnn.InputNeuron;
-import ewimberley.ml.gnn.NeuralNetwork;
-import ewimberley.ml.gnn.NeuralNetworkErrorComparator;
-import ewimberley.ml.gnn.Neuron;
-import ewimberley.ml.gnn.NeuronImpl;
-import ewimberley.ml.gnn.OutputNeuron;
+import ewimberley.ml.ann.InputNeuron;
+import ewimberley.ml.ann.NeuralNetwork;
+import ewimberley.ml.ann.Neuron;
+import ewimberley.ml.ann.NeuronImpl;
+import ewimberley.ml.ann.OutputNeuron;
+import ewimberley.ml.ann.gnn.ContinuousHiddenNeuron;
+import ewimberley.ml.ann.gnn.ContinuousOutputNeuron;
+import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
+import ewimberley.ml.ann.gnn.NeuralNetworkErrorComparator;
 
 public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 	

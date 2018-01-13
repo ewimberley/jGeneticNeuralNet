@@ -1,4 +1,4 @@
-package ewimberley.ml.gnn;
+package ewimberley.ml.ann;
 
 import java.util.ArrayList;
 import java.util.HashMap;

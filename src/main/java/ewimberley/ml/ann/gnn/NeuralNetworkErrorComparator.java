@@ -1,4 +1,4 @@
-package ewimberley.ml.gnn;
+package ewimberley.ml.ann.gnn;
 
 import java.util.Comparator;
 

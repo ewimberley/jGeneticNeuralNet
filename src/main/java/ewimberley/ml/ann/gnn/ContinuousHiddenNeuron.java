@@ -1,4 +1,8 @@
-package ewimberley.ml.gnn;
+package ewimberley.ml.ann.gnn;
+
+import ewimberley.ml.ann.HiddenNeuron;
+import ewimberley.ml.ann.NeuralNetwork;
+import ewimberley.ml.ann.Neuron;
 
 public class ContinuousHiddenNeuron extends ContinuousNeuron implements HiddenNeuron<Double> {
 

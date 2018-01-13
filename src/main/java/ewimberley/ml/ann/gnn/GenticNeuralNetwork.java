@@ -1,8 +1,11 @@
-package ewimberley.ml.gnn;
+package ewimberley.ml.ann.gnn;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+
+import ewimberley.ml.ann.NeuralNetwork;
+import ewimberley.ml.ann.Neuron;
 
 public class GenticNeuralNetwork<H> extends NeuralNetwork<H> {
 

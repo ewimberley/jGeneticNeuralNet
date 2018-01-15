@@ -14,7 +14,8 @@ public class RegressionGenticNeuralNetworkWorker implements Runnable {
 
 	private double error;
 
-	public RegressionGenticNeuralNetworkWorker(RegressionGenticNeuralNetwork network, double[][] data, Double[] y, List<Integer> trainingIndices) {
+	public RegressionGenticNeuralNetworkWorker(RegressionGenticNeuralNetwork network, double[][] data, Double[] y,
+			List<Integer> trainingIndices) {
 		this.original = network;
 		this.data = data;
 		this.trainingIndices = trainingIndices;
@@ -28,7 +29,7 @@ public class RegressionGenticNeuralNetworkWorker implements Runnable {
 		double averageMutantError = 0.0;
 		for (Integer trainingIndex : trainingIndices) {
 			if (original.getAverageError() == -1.0) {
-				//this may be memoized
+				// this may be memoized
 				averageOriginalError += original.error(data[trainingIndex], y[trainingIndex]);
 			}
 			averageMutantError += mutant.error(data[trainingIndex], y[trainingIndex]);
@@ -38,11 +39,15 @@ public class RegressionGenticNeuralNetworkWorker implements Runnable {
 			averageOriginalError /= trainingIndices.size();
 			original.setAverageError(averageOriginalError);
 		}
-//		System.out.println("Original avg error is: " + original.getAverageError());
+		// System.out.println("Original avg error is: " + original.getAverageError());
 		// calculate mutant average error
 		averageMutantError /= trainingIndices.size();
-//		System.out.println("Mutant avg error is: " + averageMutantError);
+		// System.out.println("Mutant avg error is: " + averageMutantError);
 		mutant.setAverageError(averageMutantError);
+		double improvement = averageOriginalError - averageMutantError;
+		if (improvement > 0.0) {
+			System.out.printf("%.2f ", improvement);
+		}
 	}
 
 	public double getError() {

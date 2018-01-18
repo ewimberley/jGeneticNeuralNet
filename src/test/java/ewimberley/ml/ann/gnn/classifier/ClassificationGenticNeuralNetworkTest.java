@@ -11,21 +11,6 @@ import ewimberley.ml.DataLoader;
 public class ClassificationGenticNeuralNetworkTest {
 
 	@Test
-	public void testIrisData() {
-		/*
-		 * Lichman, M. (2013). UCI Machine Learning Repository
-		 * [http://archive.ics.uci.edu/ml]. Irvine, CA: University of California, School
-		 * of Information and Computer Science.
-		 */
-		String dataFile = "src/test/resources/iris.data";
-		DataLoader dl = new DataLoader();
-		dl.loadCSVFile(dataFile);
-		ClassificationGenticNeuralNetwork bestNetwork = (ClassificationGenticNeuralNetwork) ClassificationGenticNeuralNetwork
-				.train(dl.getData(), dl.getClassLabels(), 1000, 500, 5, 8, 100.0);
-		assertTrue(bestNetwork.getAverageError() < 1.0);
-	}
-
-	@Test
 	public void testShortIrisData() {
 		/*
 		 * Lichman, M. (2013). UCI Machine Learning Repository

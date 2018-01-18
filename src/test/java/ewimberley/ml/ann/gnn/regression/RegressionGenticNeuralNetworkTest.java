@@ -16,7 +16,7 @@ public class RegressionGenticNeuralNetworkTest {
 			values[i] = i*i;
 		}
 		RegressionGenticNeuralNetwork bestNetwork = (RegressionGenticNeuralNetwork) RegressionGenticNeuralNetwork
-				.train(data, values, 1000, 500, 2, 5, 1000.0);
+				.train(data, values, 50, 50, 2, 5, 1000.0);
 		assertTrue(bestNetwork.getAverageError() < 1.0);
 	}
 

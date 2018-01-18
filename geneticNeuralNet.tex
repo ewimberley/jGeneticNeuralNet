@@ -1,7 +1,13 @@
 \documentclass[twocolumn]{article}
-\usepackage{lipsum}
-\usepackage[backend=biber,style=numeric]{biblatex}
+\usepackage{lipsum,scrextend}
+\usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
 \addbibresource{geneticNeuralNet.bib}  
+
+\newcommand\code[1]{
+	\begin{minipage}{\textwidth}
+		\texttt{\begin{addmargin}[0ex]{0ex}\scriptsize#1\end{addmargin}}
+	\end{minipage}
+}
 
 \title{Multithreaded Training of Neural Networks by a Genetic Algorithm in Java}
 \author{Eric Wimberley}
@@ -9,15 +15,47 @@
 \maketitle
 
 \begin{abstract}
-\lipsum[1-2]
+\lipsum[1]
 \end{abstract}
 
 \section{Introduction}
-Genetic neural networks (GNNs) are learning algorithms that use neural networks to associate an input with an output. Miller et al were some of the first researchers to train neural networks with genetic algorithms\cite{MillerToddHedge}. Rather than backpropagation, which determines the weights and biases within the network using partial derivatives, GNNs mutate the weights and biases randomly in a population of networks over many generations.
+Genetic neural networks (GNNs) are learning algorithms that use neural networks to associate an input with an output. Miller et al were some of the first researchers to train neural networks with genetic algorithms~\cite{MillerToddHedge}. Rather than backpropagation, which determines the weights and biases within the network using partial derivatives, GNNs mutate the weights and biases randomly in a population of networks over many generations.
 
-More recent implementations allow for the structure of the network to mutate\cite{LamStructure}.
+More recent implementations allow for the structure of the network to mutate~\cite{LamStructure}. This allows networks to form more optimal structures for a particular problem space, as well as to optimize networks for size and complexity. For example, a GNN could automatically form a Convolutional Neural Network (CNN), which is optimal for problems such as handwritten character recognition~\cite{ConvolutionalCharacterClassification}, and classification on other complex data. 
 
-\section{Multithreaded Training}
+\section{Network Model}
+Each neuron... 
+
+\section{Genetic Algorithm}
+\lipsum[2]
+
+\section{Optimizations}
+\lipsum[5]
+
+\subsection{Multithreaded Training}
+\lipsum[3]
+
+\subsection{Neuron Memoization}
+\lipsum[4]
+
+\section{Methods}
+\lipsum[1]
+
+\section{Results}
+\lipsum[2]
+
+\subsection{Usage}
+
+\code{
+String dataFile = "src/test/resources/iris.data"; \\
+DataLoader dl = new DataLoader(); \\
+dl.loadCSVFile(dataFile); \\
+Learner<String> model = ClassificationGenticNeuralNetwork.train( \\
+dl.getData(), dl.getClassLabels(), 1000, 500, 5, 8, 100.0);
+}
+
+\section{Conclusion}
+\lipsum[3]
 
 \printbibliography
 

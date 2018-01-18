@@ -54,7 +54,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 		setLearningRate(toClone.getLearningRate() * (1.0 - toClone.getAnnealingRate()));
 	}
 
-	public static Learner<String> train(double[][] data, String[] classLabels, int numNetworksPerGeneration, int numGenerations,
+	public static ClassificationGenticNeuralNetwork train(double[][] data, String[] classLabels, int numNetworksPerGeneration, int numGenerations,
 			int numHiddenLayers, int numNeuronsPerLayer, double learningRate) {
 		ConfusionMatrix cf = new ConfusionMatrix(classLabels);
 
@@ -77,7 +77,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 		}
 
 		double bestAverageError = Double.MAX_VALUE;
-		NeuralNetwork<Double, String> bestNetwork = null;
+		ClassificationGenticNeuralNetwork bestNetwork = null;
 		PriorityQueue<ClassificationGenticNeuralNetwork> population = new PriorityQueue<ClassificationGenticNeuralNetwork>(
 				new GenticNeuralNetworkErrorComparator<Double>());
 		for (int i = 0; i < numNetworksPerGeneration; i++) {
@@ -125,7 +125,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 					// averageMutantError));
 					survivors.add(mutant);
 					if (averageMutantError < bestAverageError) {
-						bestNetwork = (NeuralNetwork<Double, String>) mutant;
+						bestNetwork = mutant;
 						bestAverageError = averageMutantError;
 					}
 				} else {
@@ -143,7 +143,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 		}
 		// System.out.println("Best network had average error: " + bestAverageError);
 		// bestNetwork.printNetwork();
-		((ClassificationGenticNeuralNetwork) bestNetwork).test(data, classLabels, cf, testingIndices);
+		bestNetwork.test(data, classLabels, cf, testingIndices);
 		cf.printConfusionMatix();
 		return bestNetwork;
 	}

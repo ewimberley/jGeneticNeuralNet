@@ -1,2 +1,4 @@
 #!/bin/sh
-pdflatex geneticNeuralNet.tex
+pdflatex geneticNeuralNet
+biber geneticNeuralNet
+pdflatex geneticNeuralNet

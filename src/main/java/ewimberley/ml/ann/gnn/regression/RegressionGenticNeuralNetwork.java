@@ -247,7 +247,8 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double, D
 	}
 
 	protected Neuron<Double> createNewRandomNeuron() {
-		Neuron<Double> n = new ContinuousHiddenNeuron(this);
+		ContinuousHiddenNeuron n = new ContinuousHiddenNeuron(this);
+		n.setActivationFunction(ActivationFunction.LINEAR);
 		neurons.put(n.getUuid(), n);
 		return n;
 	}

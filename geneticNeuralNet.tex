@@ -1,5 +1,5 @@
 \documentclass[twocolumn]{article}
-\usepackage{lipsum,scrextend}
+\usepackage{lipsum,scrextend,mathtools,float}
 \usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
 \addbibresource{geneticNeuralNet.bib}  
 
@@ -9,7 +9,15 @@
 	\end{minipage}
 }
 
-\title{Multithreaded Training of Neural Networks by a Genetic Algorithm in Java}
+%figure(file name, label, scale, caption)
+\newcommand\fig[5]{
+	\begin{figure}[H]
+		\begin{center}\includegraphics[scale=#3]{#1}\end{center}
+		\caption{#4}\label{#2}
+	\end{figure}
+}
+
+\title{A Multithreaded Training of Neural Networks by a Genetic Algorithm in Java}
 \author{Eric Wimberley}
 \begin{document}
 \maketitle
@@ -24,7 +32,50 @@ Genetic neural networks (GNNs) are learning algorithms that use neural networks 
 More recent implementations allow for the structure of the network to mutate~\cite{LamStructure}. This allows networks to form more optimal structures for a particular problem space, as well as to optimize networks for size and complexity. For example, a GNN could automatically form a Convolutional Neural Network (CNN), which is optimal for problems such as handwritten character recognition~\cite{ConvolutionalCharacterClassification}, and classification on other complex data. 
 
 \section{Network Model}
-Each neuron... 
+For extensibility, neurons are implemented as objects. Each neuron has the following fields:
+
+\begin{itemize}
+	\item A unique ID 
+	\item A bias
+	\item The activation function to use
+	\item A map from IDs to input neurons
+	\item A map from IDs to output neurons
+ 	\item A map from IDs to weights (IDs correspond to output map above)
+\end{itemize}
+
+Input neurons also include a field to contain the input feature. The activation function is overridden to return this input feature without any calculation. A neuron calculates its output by summing the outputs of all input neurons multiplied by their respective weights, adding the bias, and passing the result to an activation function. 
+
+$$activation((\sum_{n=1}^{N}n \times w_n)+bias)$$
+
+A number of different activation functions are implemented. Functions with a range between 0.0 and 1.0 are particularly useful for probability regressions (the predicted probability of a class). Output neurons for the classification problem use these activation functions. 
+
+%y=(sin(x*pi-pi/2)+1)/2
+$$activation_{sin}(x) = (sin(x*\pi-\pi/2)+1)/2$$
+
+\fig{images/sin.png}{fig:sinact}{0.5}{
+A plot of the $activation_{sin}(x)$ activation function.
+}
+
+%y=arctan(x)/Pi+0.5
+$$activation_{arctan}(x) = arctan(x)/\pi+0.5$$
+
+\fig{images/tan.png}{fig:tanact}{0.5}{
+A plot of the $activation_{arctan}(x)$ activation function.
+}
+
+\[
+activation_{step}(x) =  
+\begin{dcases}
+    1,& \text{if } x\geq 0\\
+    0,              & \text{otherwise}
+\end{dcases}
+\]
+
+For regressions, some functions with a larger range are implemented.
+
+$$activation_{linear}(x) = x$$
+
+FIXME add additional activation functions x*x, etc...
 
 \section{Genetic Algorithm}
 \lipsum[2]
@@ -35,14 +86,19 @@ Each neuron...
 \subsection{Multithreaded Training}
 \lipsum[3]
 
-\subsection{Neuron Memoization}
-\lipsum[4]
+\subsection{Activation Function Memoization}
+
+Highly connected networks use the output from the same neuron for multiple neurons in the next layer. Rather than recalculating the output of these neurons, the activation function output is memoized.
+
+\begin{itemize}
+        \item The previous activation output 
+        \item A flag indicating whether to use the memoized value
+\end{itemize}
+
+FIXME add a figure where two neurons use output from the same neuron
 
 \section{Methods}
 \lipsum[1]
-
-\section{Results}
-\lipsum[2]
 
 \subsection{Usage}
 
@@ -53,6 +109,10 @@ dl.loadCSVFile(dataFile); \\
 Learner<String> model = ClassificationGenticNeuralNetwork.train( \\
 dl.getData(), dl.getClassLabels(), 1000, 500, 5, 8, 100.0);
 }
+
+
+\section{Results}
+\lipsum[2]
 
 \section{Conclusion}
 \lipsum[3]

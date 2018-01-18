@@ -2,13 +2,21 @@ package ewimberley.ml.ann;
 
 import java.text.DecimalFormat;
 
+/**
+ * An output neuron with floating point activation function output.
+ * 
+ * @author ewimberley
+ *
+ */
 public class ContinuousOutputNeuron extends ContinuousNeuron implements OutputNeuron<Double> {
 
-	public ContinuousOutputNeuron(NeuralNetwork<Double,?> network, ContinuousOutputNeuron toClone) {
+	//XXX only allow activation functions with range 0.0 to 1.0
+	
+	public ContinuousOutputNeuron(NeuralNetwork<Double, ?> network, ContinuousOutputNeuron toClone) {
 		super(network, toClone);
 	}
 
-	public ContinuousOutputNeuron(NeuralNetwork<Double,?> network) {
+	public ContinuousOutputNeuron(NeuralNetwork<Double, ?> network) {
 		super(network);
 	}
 

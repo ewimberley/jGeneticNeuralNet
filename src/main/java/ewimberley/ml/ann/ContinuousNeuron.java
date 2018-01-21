@@ -11,7 +11,7 @@ import java.text.DecimalFormat;
 public abstract class ContinuousNeuron extends NeuronImpl<Double> {
 
 	private static final double PROB_MUTATE_BIAS = 0.1;
-	
+
 	private static final double PROB_MUTATE_SYNAPSE_WEIGHT = 0.1;
 
 	protected double bias;
@@ -28,13 +28,13 @@ public abstract class ContinuousNeuron extends NeuronImpl<Double> {
 	 * @param toClone
 	 *            the neuron to make a clone of
 	 */
-	public ContinuousNeuron(NeuralNetwork<Double,?> network, ContinuousNeuron toClone) {
+	public ContinuousNeuron(NeuralNetwork<Double, ?> network, ContinuousNeuron toClone) {
 		super(network, toClone);
 		this.bias = toClone.getBias();
 		this.activationFunction = ActivationFunction.ARCTAN;
 	}
 
-	public ContinuousNeuron(NeuralNetwork<Double,?> network) {
+	public ContinuousNeuron(NeuralNetwork<Double, ?> network) {
 		super(network);
 		this.activationFunction = ActivationFunction.ARCTAN;
 	}
@@ -78,30 +78,49 @@ public abstract class ContinuousNeuron extends NeuronImpl<Double> {
 		}
 	}
 
+	/**
+	 * Run the activation function for this neuron.
+	 * 
+	 * @param in
+	 *            the summed input
+	 * @return the activation result of the activation function for this neuron
+	 */
+	protected double activation(double in) {
+		double out = 0.0;
+		if (activationFunction == ActivationFunction.ARCTAN) {
+			out = arctan(in);
+		} else if (activationFunction == ActivationFunction.SIN) {
+			out = sinusoidal(in);
+		} else if (activationFunction == ActivationFunction.STEP) {
+			out = step(in);
+		} else if (activationFunction == ActivationFunction.LINEAR) {
+			out = in;
+		}
+		return out;
+	}
+
+	/**
+	 * Get the output of this neuron.
+	 */
 	public Double activation() {
 		if (!memoized) {
-			double output = 0.0;
+			double inputSum = 0.0;
 			for (String prevNeuron : prev) {
 				Neuron<Double> prevNeuronObj = network.getNeurons().get(prevNeuron);
 				double prevOutput = prevNeuronObj.activation();
 				double prevWeight = prevNeuronObj.getNextWeights().get(this.getUuid());
-				output += prevOutput * prevWeight;
+				inputSum += prevOutput * prevWeight;
 			}
-			output += bias;
-			if (activationFunction == ActivationFunction.ARCTAN) {
-				memoizedActivation = arctan(output);
-			} else if (activationFunction == ActivationFunction.SIN) {
-				memoizedActivation = sinusoidal(output);
-			} else if (activationFunction == ActivationFunction.STEP) {
-				memoizedActivation = step(output);
-			} else if (activationFunction == ActivationFunction.LINEAR) {
-				memoizedActivation = output;
-			}
+			inputSum += bias;
+			memoizedActivation = activation(inputSum);
 			memoized = true;
 		}
 		return memoizedActivation;
 	}
 
+	/**
+	 * Randomize the entire neuron, used to create brand new neurons.
+	 */
 	public void scramble() {
 		boolean biasNegative = (network.getRandomDouble() > 0.5);
 		setBias(network.getRandomDouble() * network.getLearningRate() * (biasNegative ? -1.0 : 1.0));
@@ -112,7 +131,11 @@ public abstract class ContinuousNeuron extends NeuronImpl<Double> {
 		}
 	}
 
+	/**
+	 * Slightly randomize the properties of this neuron.
+	 */
 	public void mutate() {
+		//XXX refactor this to a class 'GeneticNeuron'
 		double mutateBias = network.getRandomDouble();
 		if (mutateBias <= PROB_MUTATE_BIAS) {
 			boolean biasNegative = (network.getRandomDouble() > 0.5);

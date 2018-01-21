@@ -54,8 +54,9 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 		setLearningRate(toClone.getLearningRate() * (1.0 - toClone.getAnnealingRate()));
 	}
 
-	public static ClassificationGenticNeuralNetwork train(double[][] data, String[] classLabels, int numNetworksPerGeneration, int numGenerations,
-			int numHiddenLayers, int numNeuronsPerLayer, double learningRate) {
+	public static ClassificationGenticNeuralNetwork train(double[][] data, String[] classLabels,
+			int numNetworksPerGeneration, int numGenerations, int numHiddenLayers, int numNeuronsPerLayer,
+			double learningRate) {
 		ConfusionMatrix cf = new ConfusionMatrix(classLabels);
 
 		// FIXME implement 10-fold cross validation
@@ -264,6 +265,12 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Doubl
 		return outputs.get(highestProbNeuron);
 	}
 
+	/**
+	 * Clear the memoized values of all neurons and set the inputs.
+	 * 
+	 * @param inputData
+	 *            the inputs to the network
+	 */
 	protected void setupForPredict(double[] inputData) {
 		for (Map.Entry<String, Neuron<Double>> neuronEntry : getNeurons().entrySet()) {
 			neuronEntry.getValue().resetMemoization();

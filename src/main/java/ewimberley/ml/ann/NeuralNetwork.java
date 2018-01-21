@@ -12,29 +12,32 @@ import ewimberley.ml.Learner;
 
 /**
  * The parent class of all neural networks.
+ * 
  * @author ewimberley
  *
- * @param <H> the output of activation functions
- * @param <Y> the type being predicted
+ * @param <H>
+ *            the output of activation functions
+ * @param <Y>
+ *            the type being predicted
  */
 public abstract class NeuralNetwork<H, Y> extends Learner<Y> {
 
 	protected Map<String, Neuron<H>> neurons;
-	
+
 	protected Set<InputNeuron<H>> inputs;
-	
+
 	protected Map<Integer, InputNeuron<H>> featureToInputMap;
-	
+
 	private List<Set<String>> layers;
-	
+
 	protected Map<OutputNeuron<H>, Y> outputs;
-	
+
 	protected int numHiddenLayers;
-	
+
 	protected int numNeuronsPerLayer;
-	
+
 	private double learningRate;
-	
+
 	private double annealingRate;
 
 	public NeuralNetwork() {
@@ -60,13 +63,17 @@ public abstract class NeuralNetwork<H, Y> extends Learner<Y> {
 		inputs.add(input);
 		neurons.put(input.getUuid(), input);
 	}
-	
+
 	protected void addOutput(Y y, OutputNeuron<H> output) {
-		//FIXME only used for classification?
+		// FIXME only used for classification?
 		outputs.put(output, y);
 		neurons.put(output.getUuid(), output);
 	}
 
+	/**
+	 * Completely randomize every neuron in the network. This is used to create a
+	 * new random network.
+	 */
 	public void scramble() {
 		for (Neuron<H> neuron : getNeurons().values()) {
 			neuron.scramble();

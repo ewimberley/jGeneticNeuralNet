@@ -27,7 +27,9 @@
 \end{abstract}
 
 \section{Introduction}
-Genetic neural networks (GNNs) are learning algorithms that use neural networks to associate an input with an output. Miller et al were some of the first researchers to train neural networks with genetic algorithms~\cite{MillerToddHedge}. Rather than backpropagation, which determines the weights and biases within the network using partial derivatives, GNNs mutate the weights and biases randomly in a population of networks over many generations.
+Genetic neural networks (GNNs) are learning algorithms that use neural networks to associate an input with an output. Miller et al were some of the first researchers to train neural networks with genetic algorithms~\cite{MillerToddHedge}. Rather than backpropagation, which determines the weights and biases within the network using partial derivatives, GNNs mutate the weights and biases randomly in a population of networks over many generations. 
+
+Genetic algorithms (GAs) are algorithms that use random mutations of solutions to optimimize some function of a system. They mimic genetic evolution of organisms in nature. While a random search of the problem space may seem less than optimal, it is can be easily parallelized~\cite{Tanese:1989:DGA:915973}.
 
 More recent implementations allow for the structure of the network to mutate~\cite{LamStructure}. This allows networks to form more optimal structures for a particular problem space, as well as to optimize networks for size and complexity. For example, a GNN could automatically form a Convolutional Neural Network (CNN), which is optimal for problems such as handwritten character recognition~\cite{ConvolutionalCharacterClassification}, and classification on other complex data. 
 
@@ -110,9 +112,14 @@ Learner<String> model = ClassificationGenticNeuralNetwork.train( \\
 dl.getData(), dl.getClassLabels(), 1000, 500, 5, 8, 100.0);
 }
 
+\subsection{Tests}
 
 \section{Results}
 \lipsum[2]
+
+\subsection{Classification}
+
+\subsection{Regression}
 
 \section{Conclusion}
 \lipsum[3]

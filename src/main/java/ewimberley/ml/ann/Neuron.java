@@ -12,14 +12,14 @@ import java.util.Set;
  * @param <H>
  *            the return type of the activation function
  */
-public interface Neuron<H> {
+public interface Neuron {
 
 	/**
 	 * Calculate the output of the neuron (recursively).
 	 * 
 	 * @return the value of this neuron based on network inputs
 	 */
-	H activation();
+	double activation();
 
 	/**
 	 * Get a set of neuron ids that this neuron passes its activation output to.
@@ -38,7 +38,7 @@ public interface Neuron<H> {
 	 *            the weight of this neuron's output on the next neurons activation
 	 *            function
 	 */
-	void addNext(Neuron<H> next, double weight);
+	void addNext(Neuron next, double weight);
 
 	/**
 	 * Add a neuron to the list of neurons this neuron passes its activation output

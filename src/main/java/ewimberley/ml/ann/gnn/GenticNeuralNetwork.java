@@ -1,13 +1,12 @@
 package ewimberley.ml.ann.gnn;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 import ewimberley.ml.ann.NeuralNetwork;
 import ewimberley.ml.ann.Neuron;
 
-public abstract class GenticNeuralNetwork<H, Y> extends NeuralNetwork<H, Y> {
+public abstract class GenticNeuralNetwork<Y> extends NeuralNetwork<Y> {
 
 	protected static final int NUM_THREADS = 100;
 
@@ -19,14 +18,14 @@ public abstract class GenticNeuralNetwork<H, Y> extends NeuralNetwork<H, Y> {
 		setAnnealingRate(0.000001);
 		this.setData(data);
 		this.setY(y);
-		this.neurons = new HashMap<String, Neuron<H>>();
+		this.neurons = new HashMap<String, Neuron>();
 		numHiddenLayers = 1; // reasonable default
 		numNeuronsPerLayer = 5; // reasonable default
 		averageError = -1.0;
 	}
 
 	public void mutate() {
-		for (Map.Entry<String, Neuron<H>> neuronEntry : getNeurons().entrySet()) {
+		for (Map.Entry<String, Neuron> neuronEntry : getNeurons().entrySet()) {
 			neuronEntry.getValue().mutate();
 		}
 	}

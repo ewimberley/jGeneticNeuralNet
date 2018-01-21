@@ -11,7 +11,7 @@ public class GenticNeuralNetworkErrorComparatorTest {
 	@Test
 	public void testCompareSame() {
 		ClassificationGenticNeuralNetwork cnn1 = new ClassificationGenticNeuralNetwork(null, null);
-		GenticNeuralNetworkErrorComparator<Double> comp = new GenticNeuralNetworkErrorComparator<Double>();
+		GenticNeuralNetworkErrorComparator comp = new GenticNeuralNetworkErrorComparator();
 		assertEquals(0, comp.compare(cnn1, cnn1));
 	}
 	
@@ -21,7 +21,7 @@ public class GenticNeuralNetworkErrorComparatorTest {
 		cnn1.setAverageError(1.0);
 		ClassificationGenticNeuralNetwork cnn2 = new ClassificationGenticNeuralNetwork(null, null);
 		cnn2.setAverageError(0.5);
-		GenticNeuralNetworkErrorComparator<Double> comp = new GenticNeuralNetworkErrorComparator<Double>();
+		GenticNeuralNetworkErrorComparator comp = new GenticNeuralNetworkErrorComparator();
 		assertEquals(1, comp.compare(cnn1, cnn2));
 	}
 	
@@ -31,7 +31,7 @@ public class GenticNeuralNetworkErrorComparatorTest {
 		cnn1.setAverageError(0.5);
 		ClassificationGenticNeuralNetwork cnn2 = new ClassificationGenticNeuralNetwork(null, null);
 		cnn2.setAverageError(1.0);
-		GenticNeuralNetworkErrorComparator<Double> comp = new GenticNeuralNetworkErrorComparator<Double>();
+		GenticNeuralNetworkErrorComparator comp = new GenticNeuralNetworkErrorComparator();
 		assertEquals(-1, comp.compare(cnn1, cnn2));
 	}
 

@@ -12,19 +12,19 @@ import java.util.concurrent.Executors;
 
 import ewimberley.ml.Learner;
 import ewimberley.ml.ann.ActivationFunction;
-import ewimberley.ml.ann.ContinuousHiddenNeuron;
-import ewimberley.ml.ann.ContinuousOutputNeuron;
 import ewimberley.ml.ann.InputNeuron;
 import ewimberley.ml.ann.NeuralNetwork;
 import ewimberley.ml.ann.Neuron;
 import ewimberley.ml.ann.NeuronImpl;
 import ewimberley.ml.ann.OutputNeuron;
+import ewimberley.ml.ann.gnn.ContinuousHiddenNeuron;
+import ewimberley.ml.ann.gnn.ContinuousOutputNeuron;
 import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
 import ewimberley.ml.ann.gnn.GenticNeuralNetworkErrorComparator;
 
-public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double, Double> {
+public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 
-	private OutputNeuron<Double> output;
+	private OutputNeuron output;
 
 	public RegressionGenticNeuralNetwork(double[][] data, Double[] y) {
 		super(data, y);
@@ -32,23 +32,23 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double, D
 
 	public RegressionGenticNeuralNetwork(RegressionGenticNeuralNetwork toClone) {
 		super(toClone.getData(), toClone.getY());
-		for (Map.Entry<String, Neuron<Double>> neuronEntry : toClone.getNeurons().entrySet()) {
+		for (Map.Entry<String, Neuron> neuronEntry : toClone.getNeurons().entrySet()) {
 			String id = neuronEntry.getKey();
-			Neuron<Double> neuron = neuronEntry.getValue();
+			Neuron neuron = neuronEntry.getValue();
 			if (neuron instanceof InputNeuron) {
-				InputNeuron<Double> clone = new InputNeuron<Double>(this, (InputNeuron<Double>) neuron);
+				InputNeuron clone = new InputNeuron(this, (InputNeuron) neuron);
 				addInput(clone);
 			} else if (neuron instanceof OutputNeuron) {
-				OutputNeuron<Double> clone = new ContinuousOutputNeuron(this, (ContinuousOutputNeuron) neuron);
+				OutputNeuron clone = new ContinuousOutputNeuron(this, (ContinuousOutputNeuron) neuron);
 				output = clone;
 			} else {
-				NeuronImpl<Double> clone = new ContinuousHiddenNeuron(this, (ContinuousHiddenNeuron) neuron);
+				NeuronImpl clone = new ContinuousHiddenNeuron(this, (ContinuousHiddenNeuron) neuron);
 				neurons.put(id, clone);
 			}
 		}
-		for (Map.Entry<Integer, InputNeuron<Double>> inputMappingEntry : toClone.getFeatureToInputMap().entrySet()) {
+		for (Map.Entry<Integer, InputNeuron> inputMappingEntry : toClone.getFeatureToInputMap().entrySet()) {
 			featureToInputMap.put(inputMappingEntry.getKey(),
-					(InputNeuron<Double>) neurons.get(inputMappingEntry.getValue().getUuid()));
+					(InputNeuron) neurons.get(inputMappingEntry.getValue().getUuid()));
 		}
 		this.setLayers(toClone.getLayers());
 		this.setOutput(toClone.getOutput());
@@ -80,9 +80,9 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double, D
 		}
 
 		double bestAverageError = Double.MAX_VALUE;
-		NeuralNetwork<Double, Double> bestNetwork = null;
+		NeuralNetwork<Double> bestNetwork = null;
 		PriorityQueue<RegressionGenticNeuralNetwork> population = new PriorityQueue<RegressionGenticNeuralNetwork>(
-				new GenticNeuralNetworkErrorComparator<Double>());
+				new GenticNeuralNetworkErrorComparator());
 		for (int i = 0; i < numNetworksPerGeneration; i++) {
 			RegressionGenticNeuralNetwork network = new RegressionGenticNeuralNetwork(data, y);
 			network.setLearningRate(learningRate);
@@ -97,7 +97,7 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double, D
 		for (int gen = 1; gen <= numGenerations; gen++) {
 			System.out.println("On generation " + gen + " Population size: " + population.size());
 			PriorityQueue<RegressionGenticNeuralNetwork> survivors = new PriorityQueue<RegressionGenticNeuralNetwork>(
-					new GenticNeuralNetworkErrorComparator<Double>());
+					new GenticNeuralNetworkErrorComparator());
 			ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 			List<RegressionGenticNeuralNetworkWorker> workers = new ArrayList<RegressionGenticNeuralNetworkWorker>();
 			for (int onNetwork = 0; onNetwork < numNetworksPerGeneration; onNetwork++) {
@@ -127,7 +127,7 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double, D
 					// averageMutantError));
 					survivors.add(mutant);
 					if (averageMutantError < bestAverageError) {
-						bestNetwork = (NeuralNetwork<Double, Double>) mutant;
+						bestNetwork = (NeuralNetwork<Double>) mutant;
 						bestAverageError = averageMutantError;
 					}
 				} else {
@@ -154,25 +154,25 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double, D
 		createInputLayer();
 
 		// create hidden layers with random links
-		Set<Neuron<Double>> previousLayer = null;
-		Set<Neuron<Double>> currentLayer = new HashSet<Neuron<Double>>();
+		Set<Neuron> previousLayer = null;
+		Set<Neuron> currentLayer = new HashSet<Neuron>();
 		Set<String> currentLayerIds = new HashSet<String>();
-		for (InputNeuron<Double> input : inputs) {
+		for (InputNeuron input : inputs) {
 			currentLayer.add(input);
 			currentLayerIds.add(input.getUuid());
 		}
 		for (int i = 0; i < numHiddenLayers; i++) {
 			previousLayer = currentLayer;
 			getLayers().add(currentLayerIds);
-			currentLayer = new HashSet<Neuron<Double>>();
+			currentLayer = new HashSet<Neuron>();
 			currentLayerIds = new HashSet<String>();
 			for (int j = 0; j < numNeuronsPerLayer; j++) {
-				Neuron<Double> n = createNewRandomNeuron();
+				Neuron n = createNewRandomNeuron();
 				currentLayer.add(n);
 				currentLayerIds.add(n.getUuid());
 			}
-			for (Neuron<Double> prev : previousLayer) {
-				for (Neuron<Double> next : currentLayer) {
+			for (Neuron prev : previousLayer) {
+				for (Neuron next : currentLayer) {
 					prev.addNext(next, 0.0);
 				}
 			}
@@ -180,22 +180,22 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double, D
 
 		previousLayer = currentLayer;
 		getLayers().add(currentLayerIds);
-		currentLayer = new HashSet<Neuron<Double>>();
+		currentLayer = new HashSet<Neuron>();
 		currentLayerIds = new HashSet<String>();
 
 		// create output layer
 		createOutputLayer(previousLayer, currentLayer, currentLayerIds);
 	}
 
-	protected void createOutputLayer(Set<Neuron<Double>> previousLayer, Set<Neuron<Double>> currentLayer,
+	protected void createOutputLayer(Set<Neuron> previousLayer, Set<Neuron> currentLayer,
 			Set<String> currentLayerIds) {
 		output = new ContinuousOutputNeuron(this);
 		((ContinuousOutputNeuron)output).setActivationFunction(ActivationFunction.LINEAR);
 		neurons.put(output.getUuid(), output);
 		currentLayer.add(output);
 		currentLayerIds.add(output.getUuid());
-		for (Neuron<Double> prev : previousLayer) {
-			for (Neuron<Double> next : currentLayer) {
+		for (Neuron prev : previousLayer) {
+			for (Neuron next : currentLayer) {
 				prev.addNext(next, 0.0);
 			}
 		}
@@ -223,9 +223,9 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double, D
 
 	public Double predict(double[] inputData) {
 		double highestProb = 0.0;
-		Neuron<Double> highestProbNeuron = null;
+		Neuron highestProbNeuron = null;
 		setupForPredict(inputData);
-		for (Neuron<Double> output : outputs.keySet()) {
+		for (Neuron output : outputs.keySet()) {
 			double prob = output.activation();
 			if (prob > highestProb) {
 				highestProbNeuron = output;
@@ -237,27 +237,27 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double, D
 	}
 
 	protected void setupForPredict(double[] inputData) {
-		for (Map.Entry<String, Neuron<Double>> neuronEntry : getNeurons().entrySet()) {
+		for (Map.Entry<String, Neuron> neuronEntry : getNeurons().entrySet()) {
 			neuronEntry.getValue().resetMemoization();
 		}
 		for (int i = 0; i < inputData.length; i++) {
-			InputNeuron<Double> in = featureToInputMap.get(i);
+			InputNeuron in = featureToInputMap.get(i);
 			in.setInput(inputData[i]);
 		}
 	}
 
-	protected Neuron<Double> createNewRandomNeuron() {
+	protected Neuron createNewRandomNeuron() {
 		ContinuousHiddenNeuron n = new ContinuousHiddenNeuron(this);
 		n.setActivationFunction(ActivationFunction.LINEAR);
 		neurons.put(n.getUuid(), n);
 		return n;
 	}
 
-	public OutputNeuron<Double> getOutput() {
+	public OutputNeuron getOutput() {
 		return output;
 	}
 
-	public void setOutput(OutputNeuron<Double> output) {
+	public void setOutput(OutputNeuron output) {
 		this.output = output;
 	}
 

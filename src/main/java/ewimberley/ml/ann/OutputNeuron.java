@@ -9,6 +9,6 @@ package ewimberley.ml.ann;
  * @param <H>
  *            the return type of the activation function
  */
-public interface OutputNeuron<H> extends Neuron<H> {
+public interface OutputNeuron extends Neuron {
 
 }

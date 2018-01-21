@@ -2,28 +2,34 @@ package ewimberley.ml.ann;
 
 import java.text.DecimalFormat;
 
-public class InputNeuron<H> extends NeuronImpl<H> {
+/**
+ * A neuron that provides input to the network.
+ * @author ewimberley
+ *
+ * @param <H> the type of output from the neuron
+ */
+public class InputNeuron extends NeuronImpl {
 
-	private H input;
+	private double input;
 	
-	public InputNeuron(NeuralNetwork<H,?> network, InputNeuron<H> toClone) {
+	public InputNeuron(NeuralNetwork<?> network, InputNeuron toClone) {
 		super(network, toClone);
 		this.input = toClone.getInput();
 	}
 	
-	public InputNeuron(NeuralNetwork<H,?> network) {
+	public InputNeuron(NeuralNetwork<?> network) {
 		super(network);
 	}
 
-	public H activation() {
+	public double activation() {
 		return input;
 	}
 
-	public H getInput() {
+	public double getInput() {
 		return input;
 	}
 
-	public void setInput(H input) {
+	public void setInput(double input) {
 		this.input = input;
 	}
 	

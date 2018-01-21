@@ -1,14 +1,18 @@
-package ewimberley.ml.ann;
+package ewimberley.ml.ann.gnn;
 
-public class ContinuousHiddenNeuron extends ContinuousNeuron implements HiddenNeuron<Double> {
+import ewimberley.ml.ann.ActivationFunction;
+import ewimberley.ml.ann.HiddenNeuron;
+import ewimberley.ml.ann.NeuralNetwork;
+
+public class ContinuousHiddenNeuron extends GeneticNeuron implements HiddenNeuron {
 
 	private static final double PROB_MUTATE_ACTIVATION_FUNC = 0.03;
 
-	public ContinuousHiddenNeuron(NeuralNetwork<Double,?> network, ContinuousHiddenNeuron toClone) {
+	public ContinuousHiddenNeuron(NeuralNetwork<?> network, ContinuousHiddenNeuron toClone) {
 		super(network, toClone);
 	}
 
-	public ContinuousHiddenNeuron(NeuralNetwork<Double,?> network) {
+	public ContinuousHiddenNeuron(NeuralNetwork<?> network) {
 		super(network);
 	}
 

@@ -15,22 +15,20 @@ import ewimberley.ml.Learner;
  * 
  * @author ewimberley
  *
- * @param <H>
- *            the output of activation functions
  * @param <Y>
  *            the type being predicted
  */
-public abstract class NeuralNetwork<H, Y> extends Learner<Y> {
+public abstract class NeuralNetwork<Y> extends Learner<Y> {
 
-	protected Map<String, Neuron<H>> neurons;
+	protected Map<String, Neuron> neurons;
 
-	protected Set<InputNeuron<H>> inputs;
+	protected Set<InputNeuron> inputs;
 
-	protected Map<Integer, InputNeuron<H>> featureToInputMap;
+	protected Map<Integer, InputNeuron> featureToInputMap;
 
 	private List<Set<String>> layers;
 
-	protected Map<OutputNeuron<H>, Y> outputs;
+	protected Map<OutputNeuron, Y> outputs;
 
 	protected int numHiddenLayers;
 
@@ -43,28 +41,28 @@ public abstract class NeuralNetwork<H, Y> extends Learner<Y> {
 	public NeuralNetwork() {
 		rand = new Random();
 		layers = new ArrayList<Set<String>>();
-		inputs = new HashSet<InputNeuron<H>>();
-		outputs = new HashMap<OutputNeuron<H>, Y>();
-		featureToInputMap = new HashMap<Integer, InputNeuron<H>>();
+		inputs = new HashSet<InputNeuron>();
+		outputs = new HashMap<OutputNeuron, Y>();
+		featureToInputMap = new HashMap<Integer, InputNeuron>();
 	}
 
 	protected void createInputLayer() {
 		int numInputs = getData()[0].length;
-		inputs = new HashSet<InputNeuron<H>>();
-		featureToInputMap = new HashMap<Integer, InputNeuron<H>>();
+		inputs = new HashSet<InputNeuron>();
+		featureToInputMap = new HashMap<Integer, InputNeuron>();
 		for (int i = 0; i < numInputs; i++) {
-			InputNeuron<H> input = new InputNeuron<H>(this);
+			InputNeuron input = new InputNeuron(this);
 			featureToInputMap.put(i, input);
 			addInput(input);
 		}
 	}
 
-	protected void addInput(InputNeuron<H> input) {
+	protected void addInput(InputNeuron input) {
 		inputs.add(input);
 		neurons.put(input.getUuid(), input);
 	}
 
-	protected void addOutput(Y y, OutputNeuron<H> output) {
+	protected void addOutput(Y y, OutputNeuron output) {
 		// FIXME only used for classification?
 		outputs.put(output, y);
 		neurons.put(output.getUuid(), output);
@@ -75,7 +73,7 @@ public abstract class NeuralNetwork<H, Y> extends Learner<Y> {
 	 * new random network.
 	 */
 	public void scramble() {
-		for (Neuron<H> neuron : getNeurons().values()) {
+		for (Neuron neuron : getNeurons().values()) {
 			neuron.scramble();
 		}
 	}
@@ -83,32 +81,32 @@ public abstract class NeuralNetwork<H, Y> extends Learner<Y> {
 	public void printNetwork() {
 		System.out.println("***********************************");
 		System.out.println("Input Layer:");
-		for (InputNeuron<H> input : inputs) {
+		for (InputNeuron input : inputs) {
 			System.out.println(" " + input.toString());
 		}
 		for (int i = 1; i < layers.size(); i++) {
 			Set<String> layer = layers.get(i);
 			System.out.println("Hidden Layer " + i + ":");
 			for (String neuronId : layer) {
-				Neuron<H> n = neurons.get(neuronId);
+				Neuron n = neurons.get(neuronId);
 				System.out.println(" " + n.toString());
 			}
 		}
 		System.out.println("Output Layer:");
-		for (Neuron<H> output : outputs.keySet()) {
+		for (Neuron output : outputs.keySet()) {
 			System.out.println(" " + output.toString());
 		}
 	}
 
-	public Map<String, Neuron<H>> getNeurons() {
+	public Map<String, Neuron> getNeurons() {
 		return neurons;
 	}
 
-	public Set<InputNeuron<H>> getInputs() {
+	public Set<InputNeuron> getInputs() {
 		return inputs;
 	}
 
-	public Map<OutputNeuron<H>, Y> getOutputs() {
+	public Map<OutputNeuron, Y> getOutputs() {
 		return outputs;
 	}
 
@@ -150,7 +148,7 @@ public abstract class NeuralNetwork<H, Y> extends Learner<Y> {
 		this.annealingRate = annealingRate;
 	}
 
-	public Map<Integer, InputNeuron<H>> getFeatureToInputMap() {
+	public Map<Integer, InputNeuron> getFeatureToInputMap() {
 		return featureToInputMap;
 	}
 

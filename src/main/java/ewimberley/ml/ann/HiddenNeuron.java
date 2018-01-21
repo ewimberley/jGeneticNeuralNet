@@ -1,5 +1,5 @@
 package ewimberley.ml.ann;
 
-public interface HiddenNeuron<H> extends Neuron<H> {
+public interface HiddenNeuron extends Neuron {
 
 }

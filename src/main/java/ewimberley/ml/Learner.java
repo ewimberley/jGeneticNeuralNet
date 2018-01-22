@@ -18,6 +18,12 @@ public abstract class Learner<Y> {
 	protected Set<String> uniqueClassLabels;
 	
 	protected Random rand;
+	
+	public Learner(double[][] data, Y[] y) {
+		this.setData(data);
+		this.setY(y);
+		rand = new Random();
+	}
 
 	public static void printTrainingExample(double[] features, String label) {
 		for (int i = 0; i < features.length; i++) {
@@ -47,7 +53,6 @@ public abstract class Learner<Y> {
 	 *            the maximum nunber in the range
 	 * @return a random integer
 	 */
-	//XXX test this
 	public int getRandInt(int min, int max) {
 		return rand.nextInt((max - min) + 1) + min;
 	}

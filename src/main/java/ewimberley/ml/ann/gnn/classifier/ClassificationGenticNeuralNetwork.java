@@ -99,8 +99,6 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 			List<ClassificationGenticNeuralNetworkWorker> workers = new ArrayList<ClassificationGenticNeuralNetworkWorker>();
 			for (int onNetwork = 0; onNetwork < numNetworksPerGeneration; onNetwork++) {
 				ClassificationGenticNeuralNetwork network = population.poll();
-				// System.out.println("Evaluating network w/ avg error: " +
-				// network.getAverageError());
 				ClassificationGenticNeuralNetworkWorker worker = new ClassificationGenticNeuralNetworkWorker(network,
 						data, classLabels, trainingIndices);
 				workers.add(worker);
@@ -121,8 +119,6 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 				ClassificationGenticNeuralNetwork original = (ClassificationGenticNeuralNetwork) worker.getOriginal();
 				double averageOriginalError = original.getAverageError();
 				if (averageMutantError != -1.0 && averageMutantError < averageOriginalError) {
-					// System.out.println("Mutant is better by " + (averageOriginalError -
-					// averageMutantError));
 					survivors.add(mutant);
 					if (averageMutantError < bestAverageError) {
 						bestNetwork = mutant;
@@ -148,6 +144,9 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 		return bestNetwork;
 	}
 
+	/**
+	 * Create a valid, randomized network.
+	 */
 	public void init() {
 		createInputLayer();
 
@@ -175,18 +174,22 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 				}
 			}
 		}
-
 		previousLayer = currentLayer;
 		getLayers().add(currentLayerIds);
-		currentLayer = new HashSet<Neuron>();
-		currentLayerIds = new HashSet<String>();
 
 		// create output layer
-		createOutputLayer(previousLayer, currentLayer, currentLayerIds);
+		createOutputLayer(previousLayer);
 	}
 
-	protected void createOutputLayer(Set<Neuron> previousLayer, Set<Neuron> currentLayer,
-			Set<String> currentLayerIds) {
+	/**
+	 * Create a valid output layer with one neuron for each class label.
+	 * 
+	 * @param previousLayer
+	 *            the layer before the output layer
+	 */
+	protected void createOutputLayer(Set<Neuron> previousLayer) {
+		Set<Neuron> currentLayer = new HashSet<Neuron>();
+		Set<String> currentLayerIds = new HashSet<String>();
 		uniqueClassLabels = calculateUniqueClassLabels(getY());
 		outputs = new HashMap<OutputNeuron, String>();
 		String[] lableStrings = uniqueClassLabels.toArray(new String[] {});
@@ -204,6 +207,13 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 		getLayers().add(currentLayerIds);
 	}
 
+	/**
+	 * Create a unique set of output class labels.
+	 * 
+	 * @param classLabels
+	 *            all class labels in the example data
+	 * @return a set of output class labels
+	 */
 	protected static HashSet<String> calculateUniqueClassLabels(String[] classLabels) {
 		HashSet<String> uniqueClassLabels = new HashSet<String>();
 		for (String classLabel : classLabels) {
@@ -248,7 +258,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 		return totalError;
 	}
 
-	// FIXME figure out how to return class and probability
+	// FIXME figure out how to return both class and probability
 	public String predict(double[] inputData) {
 		double highestProb = 0.0;
 		Neuron highestProbNeuron = null;

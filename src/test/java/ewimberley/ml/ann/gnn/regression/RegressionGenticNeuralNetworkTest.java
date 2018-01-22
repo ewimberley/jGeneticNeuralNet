@@ -2,10 +2,12 @@ package ewimberley.ml.ann.gnn.regression;
 
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class RegressionGenticNeuralNetworkTest {
 
+	@Ignore
 	@Test
 	public void testParabolaData() {
 		int numX = 100;

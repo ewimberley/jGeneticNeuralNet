@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 import ewimberley.ml.Learner;
@@ -38,15 +37,20 @@ public abstract class NeuralNetwork<Y> extends Learner<Y> {
 
 	private double annealingRate;
 
-	public NeuralNetwork() {
-		rand = new Random();
+	public NeuralNetwork(double[][] data, Y[] y) {
+		super(data, y);
 		layers = new ArrayList<Set<String>>();
 		inputs = new HashSet<InputNeuron>();
 		outputs = new HashMap<OutputNeuron, Y>();
+		neurons = new HashMap<String, Neuron>();
 		featureToInputMap = new HashMap<Integer, InputNeuron>();
 	}
 
+	/**
+	 * Create a valid input layer with at least one neuron per input feature.
+	 */
 	protected void createInputLayer() {
+		// XXX nominal variables: create an input neuron for every category w/ 0/1 input
 		int numInputs = getData()[0].length;
 		inputs = new HashSet<InputNeuron>();
 		featureToInputMap = new HashMap<Integer, InputNeuron>();
@@ -78,13 +82,16 @@ public abstract class NeuralNetwork<Y> extends Learner<Y> {
 		}
 	}
 
+	/**
+	 * Print the network in a human readable form for debugging purposes.
+	 */
 	public void printNetwork() {
 		System.out.println("***********************************");
 		System.out.println("Input Layer:");
 		for (InputNeuron input : inputs) {
 			System.out.println(" " + input.toString());
 		}
-		for (int i = 1; i < layers.size(); i++) {
+		for (int i = 1; i < layers.size() - 1; i++) {
 			Set<String> layer = layers.get(i);
 			System.out.println("Hidden Layer " + i + ":");
 			for (String neuronId : layer) {

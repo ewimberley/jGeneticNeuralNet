@@ -1,5 +1,10 @@
 package ewimberley.ml.ann.gnn;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import ewimberley.ml.ann.ActivationFunction;
 import ewimberley.ml.ann.NeuralNetwork;
 import ewimberley.ml.ann.NeuronImpl;
@@ -11,6 +16,8 @@ import ewimberley.ml.ann.NeuronImpl;
  *
  */
 public abstract class GeneticNeuron extends NeuronImpl {
+
+	private static final double PROB_MUTATE_EDGES = 0.15;
 
 	private static final double PROB_MUTATE_BIAS = 0.1;
 
@@ -68,6 +75,58 @@ public abstract class GeneticNeuron extends NeuronImpl {
 				nextWeights.put(nextNeuron, newWeight);
 			}
 		}
+		double mutateEdges = network.getRandomDouble();
+		if (mutateEdges <= PROB_MUTATE_EDGES) {
+			boolean addNeuron = (network.getRandomDouble() > 0.5);
+			if (addNeuron) {
+				String nextNeuron = getRandomNeuronInLaterLayer();
+				if (nextNeuron != null) {
+					boolean weightNegative = (network.getRandomDouble() > 0.5);
+					nextWeights.put(nextNeuron,
+							(network.getRandomDouble() * network.getLearningRate() * (weightNegative ? -1.0 : 1.0)));
+					network.getNeurons().get(nextNeuron).getPrev().add(this.getUuid());
+					next.add(nextNeuron);
+				}
+			} else {
+				List<String> deleteNeuronList = new ArrayList<String>();
+				deleteNeuronList.addAll(nextWeights.keySet());
+				if (!deleteNeuronList.isEmpty()) {
+					String toDelete = deleteNeuronList.get(network.getRandInt(0, deleteNeuronList.size() - 1));
+					nextWeights.remove(toDelete);
+					network.getNeurons().get(toDelete).getPrev().remove(this.getUuid());
+					next.remove(toDelete);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get a random neuron ID from a layer after the layer of this neuron.
+	 * 
+	 * @return a UUID of a neuron
+	 */
+	private String getRandomNeuronInLaterLayer() {
+		Set<String> possibleNextNeurons = new HashSet<String>();
+		boolean possibleNextLayer = false;
+		for (Set<String> layer : network.getLayers()) {
+			if (possibleNextLayer) {
+				for (String neuron : layer) {
+					if (!nextWeights.containsKey(neuron)) {
+						possibleNextNeurons.add(neuron);
+					}
+				}
+			}
+			if (layer.contains(this.getUuid())) {
+				possibleNextLayer = true;
+			}
+		}
+		List<String> nextNeuronList = new ArrayList<String>();
+		nextNeuronList.addAll(possibleNextNeurons);
+		if (nextNeuronList.isEmpty()) {
+			return null;
+		}
+		String nextNeuron = nextNeuronList.get(network.getRandInt(0, nextNeuronList.size() - 1));
+		return nextNeuron;
 	}
 
 }

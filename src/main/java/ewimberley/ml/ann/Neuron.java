@@ -84,12 +84,6 @@ public interface Neuron {
 	 */
 	void resetMemoization();
 
-	//XXX push this down to a genetic neural network specific neuron class/interface.
-	/**
-	 * Randomly alter this neuron by a small amount.
-	 */
-	void mutate();
-
 	/**
 	 * Add a neuron to the list of neurons that pass their activation functions to
 	 * this neuron.

@@ -21,7 +21,7 @@ public class ContinuousHiddenNeuron extends GeneticNeuron implements HiddenNeuro
 		super.mutate();
 		double mutateActivationFunc = network.getRandomDouble();
 		if (mutateActivationFunc <= PROB_MUTATE_ACTIVATION_FUNC) {
-			int activationFunc = network.getRandInt(0, 3);
+			int activationFunc = network.getRandInt(0, 4);
 			activationFunction = ActivationFunction.values()[activationFunc];
 		}
 	}

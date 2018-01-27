@@ -147,6 +147,18 @@ public abstract class NeuronImpl implements Neuron {
 			return 0.0;
 		}
 	}
+	
+	/**
+	 * An activation function based on a parabola.
+	 * 
+	 * @param in
+	 *            the sum of inputs and the bias
+	 * @return the number squared
+	 */
+	public double parabolic(double in) {
+		return in * in;
+	}
+
 
 	/**
 	 * Run the activation function for this neuron.
@@ -165,6 +177,8 @@ public abstract class NeuronImpl implements Neuron {
 			out = step(in);
 		} else if (activationFunction == ActivationFunction.LINEAR) {
 			out = in;
+		} else if (activationFunction == ActivationFunction.PARABOLIC) {
+			out = parabolic(in);
 		}
 		return out;
 	}

@@ -7,5 +7,5 @@ package ewimberley.ml.ann;
  *
  */
 public enum ActivationFunction {
-	SIN, ARCTAN, STEP, LINEAR
+	SIN, ARCTAN, STEP, LINEAR, 	PARABOLIC
 }

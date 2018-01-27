@@ -17,6 +17,7 @@ import ewimberley.ml.ann.NeuronImpl;
  */
 public abstract class GeneticNeuron extends NeuronImpl {
 
+	//FIXME make these dynamic
 	private static final double PROB_MUTATE_EDGES = 0.15;
 
 	private static final double PROB_MUTATE_BIAS = 0.1;
@@ -75,6 +76,10 @@ public abstract class GeneticNeuron extends NeuronImpl {
 				nextWeights.put(nextNeuron, newWeight);
 			}
 		}
+		mutateStructure();
+	}
+
+	private void mutateStructure() {
 		double mutateEdges = network.getRandomDouble();
 		if (mutateEdges <= PROB_MUTATE_EDGES) {
 			boolean addNeuron = (network.getRandomDouble() > 0.5);

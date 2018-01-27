@@ -17,7 +17,7 @@ public class DataLoader {
 		try {
 			csvScanner = new Scanner(file);
 			while (csvScanner.hasNext()) {
-				String line = csvScanner.next();
+				String line = csvScanner.nextLine();
 				lines.add(line);
 			}
 			csvScanner.close();

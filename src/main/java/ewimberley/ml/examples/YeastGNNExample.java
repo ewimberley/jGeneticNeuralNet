@@ -15,7 +15,7 @@ public class YeastGNNExample {
 		DataLoader dl = new DataLoader();
 		dl.loadCSVFile(dataFile);
 		ClassificationGenticNeuralNetwork model = ClassificationGenticNeuralNetwork.train(dl.getData(),
-				dl.getClassLabels(), 500, 1000, 5, 8, 100.0);
+				dl.getClassLabels(), 500, 500, 5, 10, 200.0);
 		model.printNetwork();
 	}
 

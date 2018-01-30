@@ -45,7 +45,7 @@ For extensibility, neurons are implemented as objects. Each neuron has the follo
  	\item A map from IDs to weights (IDs correspond to output map above)
 \end{itemize}
 
-Input neurons also include a field to contain the input feature. The activation function is overridden to return this input feature without any calculation. A neuron calculates its output by summing the outputs of all input neurons multiplied by their respective weights, adding the bias, and passing the result to an activation function. 
+Input neurons also include a field to contain the input feature. The activation function is overridden to return this input feature without any calculation. A neuron calculates its output by summing the outputs of all input neurons multiplied by their respective weights, adding the bias, and passing the result to an activation function~\cite{Russell:2003:AIM:773294}. 
 
 $$activation((\sum_{n=1}^{N}n \times w_n)+bias)$$
 

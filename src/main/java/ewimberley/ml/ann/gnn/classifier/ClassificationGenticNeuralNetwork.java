@@ -19,6 +19,7 @@ import ewimberley.ml.ann.NeuronImpl;
 import ewimberley.ml.ann.OutputNeuron;
 import ewimberley.ml.ann.gnn.ContinuousHiddenNeuron;
 import ewimberley.ml.ann.gnn.ContinuousOutputNeuron;
+import ewimberley.ml.ann.gnn.GeneticNeuralNetworkWorker;
 import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
 import ewimberley.ml.ann.gnn.GenticNeuralNetworkErrorComparator;
 
@@ -113,7 +114,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 					// do nothing
 				}
 			}
-			for (ClassificationGenticNeuralNetworkWorker worker : workers) {
+			for (GeneticNeuralNetworkWorker worker : workers) {
 				ClassificationGenticNeuralNetwork mutant = (ClassificationGenticNeuralNetwork) worker.getMutant();
 				double averageMutantError = mutant.getAverageError();
 				ClassificationGenticNeuralNetwork original = (ClassificationGenticNeuralNetwork) worker.getOriginal();
@@ -242,6 +243,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 		}
 	}
 
+	@Override
 	public double error(double[] inputData, String expected) {
 		double totalError = 0.0;
 		setupForPredict(inputData);

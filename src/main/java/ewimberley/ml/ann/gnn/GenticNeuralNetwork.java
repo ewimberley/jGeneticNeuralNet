@@ -33,6 +33,17 @@ public abstract class GenticNeuralNetwork<Y> extends NeuralNetwork<Y> {
 	}
 
 	/**
+	 * Compute the error of the current network for a training point.
+	 * 
+	 * @param inputData
+	 *            the input
+	 * @param expected
+	 *            the expected output
+	 * @return the network error
+	 */
+	public abstract double error(double[] inputData, Y expected);
+
+	/**
 	 * Get the average training error for this network.
 	 * 
 	 * @return the average error across all training samples

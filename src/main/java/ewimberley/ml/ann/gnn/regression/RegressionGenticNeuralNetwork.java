@@ -214,6 +214,7 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 		return mse;
 	}
 
+	@Override
 	public double error(double[] inputData, Double expected) {
 		setupForPredict(inputData);
 		double predict = output.activation();

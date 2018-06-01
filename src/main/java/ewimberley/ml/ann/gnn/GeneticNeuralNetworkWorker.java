@@ -17,6 +17,7 @@ import java.util.Random;
 public abstract class GeneticNeuralNetworkWorker<Y, N extends GenticNeuralNetwork<Y>> implements Runnable {
 
 	//XXX make this a hyperparameter
+	//FIXME increase this over time?
 	private static final double TRAINING_SAMPLE_RATIO = 0.5;
 	
 	protected N original;

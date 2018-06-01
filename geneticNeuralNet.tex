@@ -83,7 +83,13 @@ FIXME add additional activation functions x*x, etc...
 \lipsum[2]
 
 \section{Optimizations}
-\lipsum[5]
+The network training algorithm employs several important optimizations:
+
+\begin{itemize}
+ 	\item Each network is trained in a seperate thread
+	\item Memoization of neuron output  
+	\item Random sub-sampling of the training data during training error estimation 
+\end{itemize}
 
 \subsection{Multithreaded Training}
 \lipsum[3]
@@ -98,6 +104,8 @@ Highly connected networks use the output from the same neuron for multiple neuro
 \end{itemize}
 
 FIXME add a figure where two neurons use output from the same neuron
+
+Note that this optimization is important for both training and production use of the network.
 
 \section{Methods}
 \lipsum[1]

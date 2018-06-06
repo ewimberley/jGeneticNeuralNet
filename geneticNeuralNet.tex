@@ -1,5 +1,5 @@
 \documentclass[twocolumn]{article}
-\usepackage{lipsum,scrextend,mathtools,float}
+\usepackage{lipsum,scrextend,mathtools,float,xspace,algorithm,algpseudocode}
 \usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
 \addbibresource{geneticNeuralNet.bib}  
 
@@ -9,13 +9,24 @@
 	\end{minipage}
 }
 
+\newcommand\pcode[5]{
+	\begin{algorithm}[H] \caption{#1} \label{pcode:#2} \begin{algorithmic}[1]
+		\Function{#3}{#4} 
+			#5
+		\EndFunction
+	\end{algorithmic} \end{algorithm}
+}
+
+
 %figure(file name, label, scale, caption)
 \newcommand\fig[5]{
 	\begin{figure}[H]
 		\begin{center}\includegraphics[scale=#3]{#1}\end{center}
-		\caption{#4}\label{#2}
+		\caption{#4}\label{fig:#2}
 	\end{figure}
 }
+
+\newcommand\figRef[1]{Figure \ref{fig:#1}\xspace}
 
 \title{A Multithreaded Training of Neural Networks by a Genetic Algorithm in Java}
 \author{Eric Wimberley}
@@ -47,26 +58,26 @@ For extensibility, neurons are implemented as objects. Each neuron has the follo
 
 Input neurons also include a field to contain the input feature. The activation function is overridden to return this input feature without any calculation. A neuron calculates its output by summing the outputs of all input neurons multiplied by their respective weights, adding the bias, and passing the result to an activation function~\cite{Russell:2003:AIM:773294}. 
 
-$$activation((\sum_{n=1}^{N}n \times w_n)+bias)$$
+$$\varphi((\sum_{n=1}^{N}n \times w_n)+bias)$$
 
 A number of different activation functions are implemented. Functions with a range between 0.0 and 1.0 are particularly useful for probability regressions (the predicted probability of a class). Output neurons for the classification problem use these activation functions. 
 
 %y=(sin(x*pi-pi/2)+1)/2
-$$activation_{sin}(x) = (sin(x*\pi-\pi/2)+1)/2$$
+$$\varphi_{sin}(x) = (sin(x*\pi-\pi/2)+1)/2$$
 
-\fig{images/sin.png}{fig:sinact}{0.5}{
-A plot of the $activation_{sin}(x)$ activation function.
+\fig{images/sin.png}{sinact}{0.5}{
+A plot of the $\varphi_{sin}(x)$ activation function.
 }
 
 %y=arctan(x)/Pi+0.5
-$$activation_{arctan}(x) = arctan(x)/\pi+0.5$$
+$$\varphi_{arctan}(x) = arctan(x)/\pi+0.5$$
 
-\fig{images/tan.png}{fig:tanact}{0.5}{
-A plot of the $activation_{arctan}(x)$ activation function.
+\fig{images/tan.png}{tanact}{0.5}{
+A plot of the $\varphi_{arctan}(x)$ activation function.
 }
 
 \[
-activation_{step}(x) =  
+\varphi_{step}(x) =  
 \begin{dcases}
     1,& \text{if } x\geq 0\\
     0,              & \text{otherwise}
@@ -75,7 +86,7 @@ activation_{step}(x) =
 
 For regressions, some functions with a larger range are implemented.
 
-$$activation_{linear}(x) = x$$
+$$\varphi_{linear}(x) = x$$
 
 FIXME add additional activation functions x*x, etc...
 
@@ -92,20 +103,35 @@ The network training algorithm employs several important optimizations:
 \end{itemize}
 
 \subsection{Multithreaded Training}
-\lipsum[3]
+\pcode{Training Algorithm}{train}{train}{}{}
 
 \subsection{Activation Function Memoization}
 
-Highly connected networks use the output from the same neuron for multiple neurons in the next layer. Rather than recalculating the output of these neurons, the activation function output is memoized.
+Highly connected networks use the output from the same neuron for multiple neurons in the next layer. Rather than recalculating the output of these neurons, the activation function output is memoized. Each neuron only needs to store two variables in order to accomplish this. Note that this optimization is important for both training and production use of the network.
 
 \begin{itemize}
         \item The previous activation output 
         \item A flag indicating whether to use the memoized value
 \end{itemize}
 
-FIXME add a figure where two neurons use output from the same neuron
+\fig{images/memoization.png}{memoization}{0.4}{
+Two neurons use the output of neuron b. Instead of recomputing b each time, the output of b can be memoized. Note that $x_i$ refers to the bias for that neuron.
+}
 
-Note that this optimization is important for both training and production use of the network.
+The structure from \figRef{memoization} occurs a large number of times in layered neural networks. While this optimization cannot compete with matrix multiplication with specialized hardware, it does mitigate some of the performance issues associated with object oriented neural networks. The instructions to compute the output of this network with and without memoization are shown below. \\
+
+\noindent Without memoization: \\
+\indent Step 1: Compute $\varphi(a+x1)$ \\
+\indent Step 2: Compute $\varphi(b+x2)$ \\
+\indent Step 3: Compute $\varphi(a+x1)$ \\
+\indent Step 4: Compute $\varphi(b+x3)$ \\
+
+\noindent With memoization: \\
+\indent Step 1: Compute $\varphi(a+x1)$ \\
+\indent Step 2: Compute $\varphi(b+x2)$ \\
+\indent Step 3: Compute $\varphi(b+x3)$
+
+For a fully connected neural network with $N$ layers and $M$ neurons per layer, memoization reduces predicion complexity from $O(M \times M \times N)$ to $O(M \times N)$. In other words, instead of computing the neuronal output for each conection for each layer, neuronal output is computed once per neuron. Not all networks are fully connected, but this is the worst case scenario for a non-memoized implementation. 
 
 \section{Methods}
 \lipsum[1]

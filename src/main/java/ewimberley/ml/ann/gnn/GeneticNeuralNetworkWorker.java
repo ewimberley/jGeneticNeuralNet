@@ -3,6 +3,7 @@ package ewimberley.ml.ann.gnn;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * The parent class for the thread that trains a network.
@@ -53,13 +54,11 @@ public abstract class GeneticNeuralNetworkWorker<Y, N extends GenticNeuralNetwor
 	protected void computeAverageError() {
 		double averageOriginalError = 0.0;
 		double averageMutantError = 0.0;
-		
-		//FIXME use ThreadLocalRandom?
+
 		int numTrainingSamples = (int)(trainingIndices.size() * TRAINING_SAMPLE_RATIO);
-		Random random = new Random();
 		List<Integer> sampledTrainingIndices = new ArrayList<Integer>();
 		for(int sample = 0; sample < numTrainingSamples; sample++) {
-			int index = random.nextInt(trainingIndices.size());
+			int index = ThreadLocalRandom.current().nextInt(trainingIndices.size());
 			sampledTrainingIndices.add(trainingIndices.get(index));
 		}
 		

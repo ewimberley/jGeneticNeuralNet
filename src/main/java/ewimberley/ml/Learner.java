@@ -2,6 +2,7 @@ package ewimberley.ml;
 
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * The parent class of all classifiers.
@@ -17,12 +18,9 @@ public abstract class Learner<Y> {
 	
 	protected Set<String> uniqueClassLabels;
 	
-	protected Random rand;
-	
 	public Learner(double[][] data, Y[] y) {
 		this.setData(data);
 		this.setY(y);
-		rand = new Random();
 	}
 
 	public static void printTrainingExample(double[] features, String label) {
@@ -41,7 +39,8 @@ public abstract class Learner<Y> {
 	 * @return a random double
 	 */
 	public double getRandomDouble() {
-		return rand.nextDouble();
+		//return rand.nextDouble();
+		return ThreadLocalRandom.current().nextDouble();
 	}
 
 	/**
@@ -54,7 +53,8 @@ public abstract class Learner<Y> {
 	 * @return a random integer
 	 */
 	public int getRandInt(int min, int max) {
-		return rand.nextInt((max - min) + 1) + min;
+		//return rand.nextInt((max - min) + 1) + min;
+		return ThreadLocalRandom.current().nextInt((max - min) + 1) + min;
 	}
 
 	public Learner() {

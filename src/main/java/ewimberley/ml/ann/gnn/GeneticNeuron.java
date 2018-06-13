@@ -7,6 +7,7 @@ import java.util.Set;
 
 import ewimberley.ml.ann.ActivationFunction;
 import ewimberley.ml.ann.NeuralNetwork;
+import ewimberley.ml.ann.Neuron;
 import ewimberley.ml.ann.NeuronImpl;
 
 /**
@@ -84,13 +85,14 @@ public abstract class GeneticNeuron extends NeuronImpl {
 		if (mutateEdges <= PROB_MUTATE_EDGES) {
 			boolean addNeuron = (network.getRandomDouble() > 0.5);
 			if (addNeuron) {
-				String nextNeuron = getRandomNeuronInLaterLayer();
-				if (nextNeuron != null) {
+				String nextNeuronId = getRandomNeuronInLaterLayer();
+				if (nextNeuronId != null) {
 					boolean weightNegative = (network.getRandomDouble() > 0.5);
-					nextWeights.put(nextNeuron,
+					nextWeights.put(nextNeuronId,
 							(network.getRandomDouble() * network.getLearningRate() * (weightNegative ? -1.0 : 1.0)));
-					network.getNeurons().get(nextNeuron).getPrev().add(this.getUuid());
-					next.add(nextNeuron);
+					Neuron nextNeuron = network.getNeurons().get(nextNeuronId);
+					nextNeuron.getPrev().add(this.getUuid());
+					next.add(nextNeuronId);
 				}
 			} else {
 				List<String> deleteNeuronList = new ArrayList<String>();

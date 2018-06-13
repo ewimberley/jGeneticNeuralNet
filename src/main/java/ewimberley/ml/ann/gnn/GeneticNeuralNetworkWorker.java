@@ -19,7 +19,7 @@ public abstract class GeneticNeuralNetworkWorker<Y, N extends GenticNeuralNetwor
 
 	//XXX make this a hyperparameter
 	//FIXME increase this over time?
-	private static final double TRAINING_SAMPLE_RATIO = 0.5;
+	private static final double TRAINING_SAMPLE_RATIO = 0.6;
 	
 	protected N original;
 	protected N mutant;
@@ -55,6 +55,7 @@ public abstract class GeneticNeuralNetworkWorker<Y, N extends GenticNeuralNetwor
 		double averageOriginalError = 0.0;
 		double averageMutantError = 0.0;
 
+		//FIXME consider resampling and averaging new sample error in with the memoized error
 		int numTrainingSamples = (int)(trainingIndices.size() * TRAINING_SAMPLE_RATIO);
 		List<Integer> sampledTrainingIndices = new ArrayList<Integer>();
 		for(int sample = 0; sample < numTrainingSamples; sample++) {

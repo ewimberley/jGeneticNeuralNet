@@ -15,7 +15,8 @@ public class IrisGNNExample {
 		DataLoader dl = new DataLoader();
 		dl.loadCSVFile(dataFile);
 		ClassificationGenticNeuralNetwork model = ClassificationGenticNeuralNetwork.train(dl.getData(),
-				dl.getClassLabels(), 1000, 500, 5, 8, 100.0);
+				//dl.getClassLabels(), 500, 300, 5, 8, 100.0);
+				dl.getClassLabels(), 500, 500, 5, 8, 100.0);
 		model.printNetwork();
 	}
 

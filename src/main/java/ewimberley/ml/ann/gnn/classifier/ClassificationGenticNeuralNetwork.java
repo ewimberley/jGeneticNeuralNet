@@ -22,6 +22,7 @@ import ewimberley.ml.ann.gnn.ContinuousOutputNeuron;
 import ewimberley.ml.ann.gnn.GeneticNeuralNetworkWorker;
 import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
 import ewimberley.ml.ann.gnn.GenticNeuralNetworkErrorComparator;
+import ewimberley.ml.ann.gnn.regression.RegressionGenticNeuralNetwork;
 
 public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<String> {
 
@@ -83,7 +84,8 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 				new GenticNeuralNetworkErrorComparator());
 		for (int i = 0; i < numNetworksPerGeneration; i++) {
 			ClassificationGenticNeuralNetwork network = new ClassificationGenticNeuralNetwork(data, classLabels);
-			network.setLearningRate(learningRate);
+			double randLearningRate = network.getRandomDouble() * learningRate;
+			network.setLearningRate(randLearningRate);
 			network.setNumHiddenLayers(numHiddenLayers);
 			network.setNumNeuronsPerLayer(numNeuronsPerLayer);
 			network.init();
@@ -93,18 +95,30 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 			// network.printNetwork();
 		}
 		for (int gen = 1; gen <= numGenerations; gen++) {
-			System.out.println("On generation " + gen + " Population size: " + population.size());
+			System.out.print("On generation " + gen + " Population size: " + population.size());
 			PriorityQueue<ClassificationGenticNeuralNetwork> survivors = new PriorityQueue<ClassificationGenticNeuralNetwork>(
 					new GenticNeuralNetworkErrorComparator());
 			ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 			List<ClassificationGenticNeuralNetworkWorker> workers = new ArrayList<ClassificationGenticNeuralNetworkWorker>();
-			for (int onNetwork = 0; onNetwork < numNetworksPerGeneration; onNetwork++) {
+			// for (int onNetwork = 0; onNetwork < numNetworksPerGeneration; onNetwork++) {
+			int numNetworks = 0;
+			int numChildrenPerNetwork = numNetworksPerGeneration / 100;
+			if(numChildrenPerNetwork < 3) {
+				numChildrenPerNetwork = 3;
+			}
+			while (numNetworks < numNetworksPerGeneration) {
+				if(numChildrenPerNetwork > 1) {
+					numChildrenPerNetwork--;
+				}
 				ClassificationGenticNeuralNetwork network = population.poll();
-				ClassificationGenticNeuralNetworkWorker worker = new ClassificationGenticNeuralNetworkWorker(network,
-						data, classLabels, trainingIndices);
-				workers.add(worker);
-				executor.execute(worker);
-
+				survivors.add(network);
+				for (int onChild = 0; onChild < numChildrenPerNetwork; onChild++) {
+					ClassificationGenticNeuralNetworkWorker worker = new ClassificationGenticNeuralNetworkWorker(
+							network, data, classLabels, trainingIndices);
+					workers.add(worker);
+					executor.execute(worker);
+					numNetworks++;
+				}
 			}
 			executor.shutdown();
 			while (!executor.isTerminated()) {
@@ -114,7 +128,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 					// do nothing
 				}
 			}
-			for (GeneticNeuralNetworkWorker worker : workers) {
+			for (GeneticNeuralNetworkWorker<?, ?> worker : workers) {
 				ClassificationGenticNeuralNetwork mutant = (ClassificationGenticNeuralNetwork) worker.getMutant();
 				double averageMutantError = mutant.getAverageError();
 				ClassificationGenticNeuralNetwork original = (ClassificationGenticNeuralNetwork) worker.getOriginal();
@@ -125,21 +139,28 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 						bestNetwork = mutant;
 						bestAverageError = averageMutantError;
 					}
-				} else {
-					survivors.add(original);
-					if (averageOriginalError != -1.0 && averageOriginalError < bestAverageError) {
-						bestNetwork = original;
-						bestAverageError = averageOriginalError;
-					}
-				}
-
+				} 
+//				else {
+//					survivors.add(original);
+//					if (averageOriginalError != -1.0 && averageOriginalError < bestAverageError) {
+//						bestNetwork = original;
+//						bestAverageError = averageOriginalError;
+//					}
+//				}
 			}
 			population = survivors;
 			// bestNetwork.printNetwork();
-			System.out.println("Best network had average error: " + bestAverageError);
+			System.out.print(" - Top 10: [");
+			ClassificationGenticNeuralNetwork[] survivorArray = survivors
+					.toArray(new ClassificationGenticNeuralNetwork[] {});
+			for (int i = 0; i < 10; i++) {
+				if (i > 0) {
+					System.out.print(", ");
+				}
+				System.out.print(survivorArray[i].getAverageError());
+			}
+			System.out.println("]");
 		}
-		// System.out.println("Best network had average error: " + bestAverageError);
-		// bestNetwork.printNetwork();
 		bestNetwork.test(data, classLabels, cf, testingIndices);
 		cf.printConfusionMatix();
 		return bestNetwork;

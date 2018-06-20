@@ -18,6 +18,8 @@ import ewimberley.ml.Learner;
  *            the type being predicted
  */
 public abstract class NeuralNetwork<Y> extends Learner<Y> {
+	
+	private String id;
 
 	protected Map<String, Neuron> neurons;
 
@@ -39,6 +41,7 @@ public abstract class NeuralNetwork<Y> extends Learner<Y> {
 
 	public NeuralNetwork(double[][] data, Y[] y) {
 		super(data, y);
+		generateNewId();
 		layers = new ArrayList<Set<String>>();
 		inputs = new HashSet<InputNeuron>();
 		outputs = new HashMap<OutputNeuron, Y>();
@@ -159,12 +162,29 @@ public abstract class NeuralNetwork<Y> extends Learner<Y> {
 		return featureToInputMap;
 	}
 
+	/**
+	 * Get the layers of the neural network as a set of IDs.
+	 * 
+	 * @return a list of sets where each item is a layer of the network
+	 */
 	public List<Set<String>> getLayers() {
 		return layers;
 	}
 
 	public void setLayers(List<Set<String>> layers) {
 		this.layers = layers;
+	}
+
+	/**
+	 * Get the unique id of this network.
+	 * @return the unique id string.
+	 */
+	public String getId() {
+		return id;
+	}
+	
+	protected void generateNewId() {
+		id = java.util.UUID.randomUUID().toString();
 	}
 
 }

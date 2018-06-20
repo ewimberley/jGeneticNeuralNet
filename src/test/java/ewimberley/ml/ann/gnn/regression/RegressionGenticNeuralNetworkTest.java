@@ -16,7 +16,7 @@ public class RegressionGenticNeuralNetworkTest {
 		//XXX not working
 		RegressionGenticNeuralNetwork bestNetwork = (RegressionGenticNeuralNetwork) RegressionGenticNeuralNetwork
 				//.train(data, values, 1000, 2000, 4, 10, 100.0);
-				.train(data, values, 500, 300, 4, 10, 100.0);
+				.train(data, values, 2000, 10000, 5, 10, 100.0, null);
 		//assertTrue(bestNetwork.getAverageError() < 1.0);
 		System.out.println(bestNetwork.getAverageError());
 		

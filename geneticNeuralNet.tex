@@ -28,7 +28,7 @@
 
 \newcommand\figRef[1]{Figure \ref{fig:#1}\xspace}
 
-\title{A Multithreaded Training of Neural Networks by a Genetic Algorithm in Java}
+\title{jGeneticNeuralNet: Multithreaded Training of Neural Networks by a Genetic Algorithm in Java}
 \author{Eric Wimberley}
 \begin{document}
 \maketitle
@@ -39,6 +39,10 @@
 
 \section{Introduction}
 Genetic neural networks (GNNs) are learning algorithms that use neural networks to associate an input with an output. Miller et al were some of the first researchers to train neural networks with genetic algorithms~\cite{MillerToddHedge}. Rather than backpropagation, which determines the weights and biases within the network using partial derivatives, GNNs mutate the weights and biases randomly in a population of networks over many generations. 
+
+\fig{images/visualization.png}{networkVis}{0.18}{
+A visualization of a classification network with 8 input variables (green) and 10 output classes (blue). There are 5 hidden layers of 10 nodes each (black);
+}
 
 Genetic algorithms (GAs) are algorithms that use random mutations of solutions to optimimize some function of a system. They mimic genetic evolution of organisms in nature. While a random search of the problem space may seem less than optimal, it is can be easily parallelized~\cite{Tanese:1989:DGA:915973}.
 
@@ -91,7 +95,20 @@ $$\varphi_{linear}(x) = x$$
 FIXME add additional activation functions x*x, etc...
 
 \section{Genetic Algorithm}
-\lipsum[2]
+Networks are trained with a genetic algorith, which first produces a large number of random networks. Each network is tested for fitness by determining its average error rate on the training data, and the population of networks is mutated to generate networks with improved fitness.
+
+\subsection{Fitness}
+\lipsum[1]
+
+\subsection{Mutation}
+
+\fig{images/originalRegression.png}{originalStructure}{0.2}{
+A simple regression network that is fully connected.
+}
+
+\fig{images/mutatedRegression.png}{originalStructure}{0.2}{
+A mutated network with a different connection structure.
+}
 
 \section{Optimizations}
 The network training algorithm employs several important optimizations:
@@ -103,7 +120,14 @@ The network training algorithm employs several important optimizations:
 \end{itemize}
 
 \subsection{Multithreaded Training}
-\pcode{Training Algorithm}{train}{train}{}{}
+\pcode{Training Algorithm}{train}{train}{}{
+	\State Let pool be a thread pool that accepts jobs
+	\State Let population be a set of networks
+	\For{$nework$ in $population$} 
+		\If {$condition$}
+		\EndIf
+	\EndFor
+}
 
 \subsection{Activation Function Memoization}
 

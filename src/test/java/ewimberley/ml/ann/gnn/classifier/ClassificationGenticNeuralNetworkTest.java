@@ -20,7 +20,7 @@ public class ClassificationGenticNeuralNetworkTest {
 		DataLoader dl = new DataLoader();
 		dl.loadCSVFile(dataFile);
 		ClassificationGenticNeuralNetwork bestNetwork = (ClassificationGenticNeuralNetwork) ClassificationGenticNeuralNetwork
-				.train(dl.getData(), dl.getClassLabels(), 10, 10, 5, 8, 100.0);
+				.train(dl.getData(), dl.getClassLabels(), 10, 10, 5, 8, 100.0, null);
 		assertTrue(bestNetwork.getAverageError() <= 3.0);
 	}
 
@@ -33,7 +33,7 @@ public class ClassificationGenticNeuralNetworkTest {
 		labels[0] = "Test";
 		labels[1] = "Test2";
 		ClassificationGenticNeuralNetwork bestNetwork = (ClassificationGenticNeuralNetwork) ClassificationGenticNeuralNetwork
-				.train(data, labels, 1, 1, 1, 1, 100.0);
+				.train(data, labels, 1, 1, 1, 1, 100.0, null);
 		assertEquals(1, bestNetwork.getInputs().size());
 		assertEquals(2, bestNetwork.getOutputs().size());
 		assertEquals(3, bestNetwork.getLayers().size());

@@ -8,7 +8,7 @@ import ewimberley.ml.ann.Neuron;
 public abstract class GenticNeuralNetwork<Y> extends NeuralNetwork<Y> {
 
 	// FIXME make this configurable
-	protected static final int NUM_THREADS = 100;
+	protected static final int NUM_THREADS = 24;
 
 	private double averageError;
 
@@ -25,6 +25,7 @@ public abstract class GenticNeuralNetwork<Y> extends NeuralNetwork<Y> {
 	 * Mutate all neurons in the network.
 	 */
 	public void mutate() {
+		generateNewId();
 		for (Map.Entry<String, Neuron> neuronEntry : getNeurons().entrySet()) {
 			if (neuronEntry.getValue() instanceof GeneticNeuron) {
 				((GeneticNeuron) neuronEntry.getValue()).mutate();

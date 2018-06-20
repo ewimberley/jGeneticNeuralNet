@@ -23,8 +23,11 @@ import ewimberley.ml.ann.gnn.GeneticNeuralNetworkWorker;
 import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
 import ewimberley.ml.ann.gnn.GenticNeuralNetworkErrorComparator;
 import ewimberley.ml.ann.gnn.regression.RegressionGenticNeuralNetwork;
+import ewimberley.ml.ann.visualizer.ANNVisualizer;
 
 public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<String> {
+
+	private static final int GENERATIONAL_DEBUG_INTERVAL = 10;
 
 	public ClassificationGenticNeuralNetwork(double[][] data, String[] classLabels) {
 		super(data, classLabels);
@@ -57,7 +60,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 
 	public static ClassificationGenticNeuralNetwork train(double[][] data, String[] classLabels,
 			int numNetworksPerGeneration, int numGenerations, int numHiddenLayers, int numNeuronsPerLayer,
-			double learningRate) {
+			double learningRate, ANNVisualizer visualizer) {
 		ConfusionMatrix cf = new ConfusionMatrix(classLabels);
 
 		// FIXME implement 10-fold cross validation
@@ -95,24 +98,26 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 			// network.printNetwork();
 		}
 		for (int gen = 1; gen <= numGenerations; gen++) {
-			System.out.print("On generation " + gen + " Population size: " + population.size());
+			if ((gen % GENERATIONAL_DEBUG_INTERVAL) == 0) {
+				System.out.print("On generation " + gen + " Population size: " + population.size());
+			}
 			PriorityQueue<ClassificationGenticNeuralNetwork> survivors = new PriorityQueue<ClassificationGenticNeuralNetwork>(
 					new GenticNeuralNetworkErrorComparator());
+			Set<String> survivorIds = new HashSet<String>();
 			ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
 			List<ClassificationGenticNeuralNetworkWorker> workers = new ArrayList<ClassificationGenticNeuralNetworkWorker>();
-			// for (int onNetwork = 0; onNetwork < numNetworksPerGeneration; onNetwork++) {
 			int numNetworks = 0;
-			int numChildrenPerNetwork = numNetworksPerGeneration / 100;
-			if(numChildrenPerNetwork < 3) {
-				numChildrenPerNetwork = 3;
+			double numChildrenPerNetwork = numNetworksPerGeneration / 100;
+			if (numChildrenPerNetwork < 10.0) {
+				numChildrenPerNetwork = 10.0;
 			}
 			while (numNetworks < numNetworksPerGeneration) {
-				if(numChildrenPerNetwork > 1) {
-					numChildrenPerNetwork--;
+				if (numChildrenPerNetwork > 1) {
+					numChildrenPerNetwork -= 0.25;
 				}
+				int intNumChildrenPerNetwork = (int) Math.ceil(numChildrenPerNetwork);
 				ClassificationGenticNeuralNetwork network = population.poll();
-				survivors.add(network);
-				for (int onChild = 0; onChild < numChildrenPerNetwork; onChild++) {
+				for (int onChild = 0; onChild < intNumChildrenPerNetwork; onChild++) {
 					ClassificationGenticNeuralNetworkWorker worker = new ClassificationGenticNeuralNetworkWorker(
 							network, data, classLabels, trainingIndices);
 					workers.add(worker);
@@ -135,31 +140,48 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 				double averageOriginalError = original.getAverageError();
 				if (averageMutantError != -1.0 && averageMutantError < averageOriginalError) {
 					survivors.add(mutant);
+					survivorIds.add(mutant.getId());
 					if (averageMutantError < bestAverageError) {
 						bestNetwork = mutant;
 						bestAverageError = averageMutantError;
 					}
-				} 
-//				else {
-//					survivors.add(original);
-//					if (averageOriginalError != -1.0 && averageOriginalError < bestAverageError) {
-//						bestNetwork = original;
-//						bestAverageError = averageOriginalError;
-//					}
-//				}
+				} else {
+					if(!survivorIds.contains(original.getId())) {
+						survivors.add(original);
+						survivorIds.add(original.getId());
+					}
+					// if (averageOriginalError != -1.0 && averageOriginalError < bestAverageError)
+					// {
+					// bestNetwork = original;
+					// bestAverageError = averageOriginalError;
+					// }
+				}
+			}
+			while (survivors.size() < numNetworksPerGeneration) {
+				ClassificationGenticNeuralNetwork network = population.poll();
+				if(!survivorIds.contains(network.getId())) {
+					survivors.add(network);
+					survivorIds.add(network.getId());
+				}
 			}
 			population = survivors;
 			// bestNetwork.printNetwork();
-			System.out.print(" - Top 10: [");
-			ClassificationGenticNeuralNetwork[] survivorArray = survivors
-					.toArray(new ClassificationGenticNeuralNetwork[] {});
-			for (int i = 0; i < 10; i++) {
-				if (i > 0) {
-					System.out.print(", ");
+			if ((gen % GENERATIONAL_DEBUG_INTERVAL) == 0) {
+				System.out.print(" - Top 10: [");
+				ClassificationGenticNeuralNetwork[] survivorArray = survivors
+						.toArray(new ClassificationGenticNeuralNetwork[] {});
+				for (int i = 0; i < 10; i++) {
+					if (i > 0) {
+						System.out.print(", ");
+					}
+					System.out.print(survivorArray[i].getAverageError());
 				}
-				System.out.print(survivorArray[i].getAverageError());
+				System.out.println("]");
+				if (visualizer != null) {
+					visualizer.drawNetwork(survivorArray[0]);
+					visualizer.repaint();
+				}
 			}
-			System.out.println("]");
 		}
 		bestNetwork.test(data, classLabels, cf, testingIndices);
 		cf.printConfusionMatix();

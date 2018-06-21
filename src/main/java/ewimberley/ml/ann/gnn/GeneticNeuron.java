@@ -18,8 +18,10 @@ import ewimberley.ml.ann.NeuronImpl;
  */
 public abstract class GeneticNeuron extends NeuronImpl {
 
+	private static final double HALF = 0.5;
+
 	//FIXME make these dynamic
-	private static final double PROB_MUTATE_EDGES = 0.15;
+	private static final double PROB_MUTATE_EDGES = 0.1;
 
 	private static final double PROB_MUTATE_BIAS = 0.1;
 
@@ -63,14 +65,14 @@ public abstract class GeneticNeuron extends NeuronImpl {
 	public void mutate() {
 		double mutateBias = network.getRandomDouble();
 		if (mutateBias <= PROB_MUTATE_BIAS) {
-			boolean biasNegative = (network.getRandomDouble() > 0.5);
+			boolean biasNegative = (network.getRandomDouble() > HALF);
 			double deltaBias = network.getRandomDouble() * (biasNegative ? -1.0 : 1.0) * network.getLearningRate();
 			setBias(getBias() + deltaBias);
 		}
 		for (String nextNeuron : nextWeights.keySet()) {
 			double mutateSynapseWeight = network.getRandomDouble();
 			if (mutateSynapseWeight <= PROB_MUTATE_SYNAPSE_WEIGHT) {
-				boolean weightNegative = (network.getRandomDouble() > 0.5);
+				boolean weightNegative = (network.getRandomDouble() > HALF);
 				double deltaWeight = (network.getRandomDouble() * (weightNegative ? -1.0 : 1.0))
 						* network.getLearningRate();
 				double newWeight = nextWeights.get(nextNeuron) + deltaWeight;
@@ -83,11 +85,11 @@ public abstract class GeneticNeuron extends NeuronImpl {
 	private void mutateStructure() {
 		double mutateEdges = network.getRandomDouble();
 		if (mutateEdges <= PROB_MUTATE_EDGES) {
-			boolean addNeuron = (network.getRandomDouble() > 0.5);
+			boolean addNeuron = (network.getRandomDouble() > HALF);
 			if (addNeuron) {
 				String nextNeuronId = getRandomNeuronInLaterLayer();
 				if (nextNeuronId != null) {
-					boolean weightNegative = (network.getRandomDouble() > 0.5);
+					boolean weightNegative = (network.getRandomDouble() > HALF);
 					nextWeights.put(nextNeuronId,
 							(network.getRandomDouble() * network.getLearningRate() * (weightNegative ? -1.0 : 1.0)));
 					Neuron nextNeuron = network.getNeurons().get(nextNeuronId);

@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import ewimberley.ml.DataLoader;
+import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
+import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
 
 public class ClassificationGenticNeuralNetworkTest {
 
@@ -19,8 +21,14 @@ public class ClassificationGenticNeuralNetworkTest {
 		String dataFile = "src/test/resources/iris.data";
 		DataLoader dl = new DataLoader();
 		dl.loadCSVFile(dataFile);
-		ClassificationGenticNeuralNetwork bestNetwork = (ClassificationGenticNeuralNetwork) ClassificationGenticNeuralNetwork
-				.train(dl.getData(), dl.getClassLabels(), 10, 10, 5, 8, 100.0, null);
+		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
+		config.setNumNetworksPerGeneration(100);
+		config.setNumGenerations(1000);
+		config.setNumHiddenLayers(5);
+		config.setNumNeuronsPerLayer(12);
+		config.setMaxLearningRate(100.0);
+		GenticNeuralNetwork<String> bestNetwork = (GenticNeuralNetwork<String>) ClassificationGenticNeuralNetwork
+				.train(dl.getData(), dl.getClassLabels(), config);
 		assertTrue(bestNetwork.getAverageError() <= 3.0);
 	}
 
@@ -32,8 +40,14 @@ public class ClassificationGenticNeuralNetworkTest {
 		String[] labels = new String[2];
 		labels[0] = "Test";
 		labels[1] = "Test2";
-		ClassificationGenticNeuralNetwork bestNetwork = (ClassificationGenticNeuralNetwork) ClassificationGenticNeuralNetwork
-				.train(data, labels, 1, 1, 1, 1, 100.0, null);
+		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
+		config.setNumNetworksPerGeneration(100);
+		config.setNumGenerations(1000);
+		config.setNumHiddenLayers(5);
+		config.setNumNeuronsPerLayer(12);
+		config.setMaxLearningRate(100.0);
+		GenticNeuralNetwork<String> bestNetwork = (GenticNeuralNetwork<String>) ClassificationGenticNeuralNetwork
+				.train(data, labels, config);
 		assertEquals(1, bestNetwork.getInputs().size());
 		assertEquals(2, bestNetwork.getOutputs().size());
 		assertEquals(3, bestNetwork.getLayers().size());

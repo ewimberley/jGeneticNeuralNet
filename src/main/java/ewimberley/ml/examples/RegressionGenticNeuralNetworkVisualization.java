@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 
 import org.junit.Test;
 
+import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.gnn.regression.RegressionGenticNeuralNetwork;
 import ewimberley.ml.ann.visualizer.ANNVisualizer;
 
@@ -44,7 +45,14 @@ public class RegressionGenticNeuralNetworkVisualization extends JFrame {
 			values[i] = i * i;
 		}				
 		// XXX not working
-		RegressionGenticNeuralNetwork bestNetwork = (RegressionGenticNeuralNetwork) RegressionGenticNeuralNetwork.train(data, values, 1000, 10000, 3, 5, 100.0, vis);
+		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
+		config.setNumNetworksPerGeneration(100);
+		config.setNumGenerations(1000);
+		config.setNumHiddenLayers(5);
+		config.setNumNeuronsPerLayer(12);
+		config.setMaxLearningRate(100.0);
+		config.setVisualizer(vis);
+		RegressionGenticNeuralNetwork bestNetwork = (RegressionGenticNeuralNetwork) RegressionGenticNeuralNetwork.train(data, values, config);
 				//.train(data, values, 2000, 10000, 5, 10, 100.0);
 		// assertTrue(bestNetwork.getAverageError() < 1.0);
 		System.out.println(bestNetwork.getAverageError());

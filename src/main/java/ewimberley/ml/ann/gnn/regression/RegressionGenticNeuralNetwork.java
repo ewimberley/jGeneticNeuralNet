@@ -14,11 +14,13 @@ import ewimberley.ml.Learner;
 import ewimberley.ml.ann.ActivationFunction;
 import ewimberley.ml.ann.InputNeuron;
 import ewimberley.ml.ann.NeuralNetwork;
+import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.Neuron;
 import ewimberley.ml.ann.NeuronImpl;
 import ewimberley.ml.ann.OutputNeuron;
 import ewimberley.ml.ann.gnn.ContinuousHiddenNeuron;
 import ewimberley.ml.ann.gnn.ContinuousOutputNeuron;
+import ewimberley.ml.ann.gnn.GeneticNeuralNetworkWorker;
 import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
 import ewimberley.ml.ann.gnn.GenticNeuralNetworkErrorComparator;
 import ewimberley.ml.ann.gnn.classifier.ClassificationGenticNeuralNetwork;
@@ -36,6 +38,7 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 
 	public RegressionGenticNeuralNetwork(RegressionGenticNeuralNetwork toClone) {
 		super(toClone.getData(), toClone.getY());
+		this.setConfig(toClone.getConfig());
 		for (Map.Entry<String, Neuron> neuronEntry : toClone.getNeurons().entrySet()) {
 			String id = neuronEntry.getKey();
 			Neuron neuron = neuronEntry.getValue();
@@ -61,9 +64,7 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 		setLearningRate(toClone.getLearningRate() * (1.0 - toClone.getAnnealingRate()));
 	}
 
-	public static Learner<Double> train(double[][] data, double[] yPrim, int numNetworksPerGeneration,
-			int numGenerations, int numHiddenLayers, int numNeuronsPerLayer, double learningRate,
-			ANNVisualizer visualizer) {
+	public static Learner<Double> train(double[][] data, double[] yPrim, NeuralNetworkTrainingConfiguration config) {
 		Double[] y = new Double[yPrim.length];
 		for (int i = 0; i < yPrim.length; i++) {
 			y[i] = yPrim[i];
@@ -87,45 +88,41 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 		}
 
 		double bestAverageError = Double.MAX_VALUE;
-		NeuralNetwork<Double> bestNetwork = null;
-		PriorityQueue<RegressionGenticNeuralNetwork> population = new PriorityQueue<RegressionGenticNeuralNetwork>(
+		GenticNeuralNetwork<?> bestNetwork = null;
+		PriorityQueue<GenticNeuralNetwork<?>> population = new PriorityQueue<GenticNeuralNetwork<?>>(
 				new GenticNeuralNetworkErrorComparator());
-		for (int i = 0; i < numNetworksPerGeneration; i++) {
+		for (int i = 0; i < config.getNumNetworksPerGeneration(); i++) {
 			RegressionGenticNeuralNetwork network = new RegressionGenticNeuralNetwork(data, y);
-			double randLearningRate = network.getRandomDouble() * learningRate;
+			double randLearningRate = network.getRandomDouble() * config.getMaxLearningRate();
 			network.setLearningRate(randLearningRate);
-			network.setNumHiddenLayers(numHiddenLayers);
-			network.setNumNeuronsPerLayer(numNeuronsPerLayer);
-			network.init();
+			network.setConfig(config);
+			network.init(config.getNumHiddenLayers(), config.getNumNeuronsPerLayer());
 			network.scramble();
 			population.add(network);
 			bestNetwork = network;
 			// network.printNetwork();
 		}
-		for (int gen = 1; gen <= numGenerations; gen++) {
+		for (int gen = 1; gen <= config.getNumGenerations(); gen++) {
 			if ((gen % GENERATIONAL_DEBUG_INTERVAL) == 0) {
 				System.out.print("On generation " + gen + " Population size: " + population.size());
 			}
-			PriorityQueue<RegressionGenticNeuralNetwork> survivors = new PriorityQueue<RegressionGenticNeuralNetwork>(
+			PriorityQueue<GenticNeuralNetwork<?>> survivors = new PriorityQueue<GenticNeuralNetwork<?>>(
 					new GenticNeuralNetworkErrorComparator());
 			Set<String> survivorIds = new HashSet<String>();
 			ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
-			List<RegressionGenticNeuralNetworkWorker> workers = new ArrayList<RegressionGenticNeuralNetworkWorker>();
-			// for (int onNetwork = 0; onNetwork < numNetworksPerGeneration; onNetwork++) {
+			List<GeneticNeuralNetworkWorker<?, ?>> workers = new ArrayList<GeneticNeuralNetworkWorker<?, ?>>();
 			int numNetworks = 0;
-			double numChildrenPerNetwork = numNetworksPerGeneration / 100;
+			double numChildrenPerNetwork = config.getNumNetworksPerGeneration() / 100;
 			if (numChildrenPerNetwork < 10.0) {
 				numChildrenPerNetwork = 10.0;
 			}
-			while (numNetworks < numNetworksPerGeneration) {
+			while (numNetworks < config.getNumNetworksPerGeneration()) {
 				if (numChildrenPerNetwork > 1) {
 					numChildrenPerNetwork -= 0.25;
 				}
 				int intNumChildrenPerNetwork = (int) Math.ceil(numChildrenPerNetwork);
-				RegressionGenticNeuralNetwork network = population.poll();
+				RegressionGenticNeuralNetwork network = (RegressionGenticNeuralNetwork) population.poll();
 				for (int onChild = 0; onChild < intNumChildrenPerNetwork; onChild++) {
-					// System.out.println("Evaluating network w/ avg error: " +
-					// network.getAverageError());
 					RegressionGenticNeuralNetworkWorker worker = new RegressionGenticNeuralNetworkWorker(network, data,
 							y, trainingIndices);
 					workers.add(worker);
@@ -133,76 +130,33 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 					numNetworks++;
 				}
 			}
-			executor.shutdown();
-			while (!executor.isTerminated()) {
-				try {
-					Thread.sleep(25);
-				} catch (InterruptedException e) {
-					// do nothing
-				}
-			}
-			for (RegressionGenticNeuralNetworkWorker worker : workers) {
-				RegressionGenticNeuralNetwork mutant = (RegressionGenticNeuralNetwork) worker.getMutant();
-				double averageMutantError = mutant.getAverageError();
-				RegressionGenticNeuralNetwork original = (RegressionGenticNeuralNetwork) worker.getOriginal();
-				double averageOriginalError = original.getAverageError();
-				if (averageMutantError != -1.0 && averageMutantError < averageOriginalError) {
-					// System.out.println("Mutant is better by " + (averageOriginalError -
-					// averageMutantError));
-					survivors.add(mutant);
-					survivorIds.add(mutant.getId());
-					// survivors.add(original);
-					if (averageMutantError < bestAverageError) {
-						bestNetwork = (NeuralNetwork<Double>) mutant;
-						bestAverageError = averageMutantError;
-					}
-				} else {
-					if(!survivorIds.contains(original.getId())) {
-						survivors.add(original);
-						survivorIds.add(original.getId());
-					}
-					// if (averageOriginalError != -1.0 && averageOriginalError < bestAverageError)
-					// {
-					// bestNetwork = original;
-					// bestAverageError = averageOriginalError;
-				}
-				// }
-			}
-			while (survivors.size() < numNetworksPerGeneration) {
-				RegressionGenticNeuralNetwork network = population.poll();
-				if(!survivorIds.contains(network.getId())) {
-					survivors.add(network);
-					survivorIds.add(network.getId());
-				}
-			}
-			population = survivors;
-			// bestNetwork.printNetwork();
-			// System.out.println("Best network had average error: " + bestAverageError);\
+			waitForAllWorkers(executor);
+			PriorityQueue<GenticNeuralNetwork<?>> workersOutput = processWorkers(workers);
+			bestNetwork = workersOutput.peek();
+			population = repopulate(config, workersOutput);
 			if ((gen % GENERATIONAL_DEBUG_INTERVAL) == 0) {
 				System.out.print(" - Top 10: [");
-				RegressionGenticNeuralNetwork[] survivorArray = survivors
+				RegressionGenticNeuralNetwork[] topNetworkArray = population
 						.toArray(new RegressionGenticNeuralNetwork[] {});
 				for (int i = 0; i < 10; i++) {
 					if (i > 0) {
 						System.out.print(", ");
 					}
-					System.out.print(survivorArray[i].getAverageError());
+					System.out.print(topNetworkArray[i].getAverageError());
 				}
 				System.out.println("]");
-				if (visualizer != null) {
-					visualizer.drawNetwork(survivorArray[0]);
-					visualizer.repaint();
+				if (config.getVisualizer() != null) {
+					config.getVisualizer().drawNetwork(topNetworkArray[0]);
+					config.getVisualizer().repaint();
 				}
 			}
 		}
-		// System.out.println("Best network had average error: " + bestAverageError);
-		// bestNetwork.printNetwork();
 		double mse = ((RegressionGenticNeuralNetwork) bestNetwork).test(data, y, testingIndices);
 		System.out.println("Mean squared error: " + mse);
-		return bestNetwork;
+		return (Learner<Double>) bestNetwork;
 	}
 
-	public void init() {
+	public void init(int numHiddenLayers, int numNeuronsPerLayer) {
 		createInputLayer();
 
 		// create hidden layers with random links

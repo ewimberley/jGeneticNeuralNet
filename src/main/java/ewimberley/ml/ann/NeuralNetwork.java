@@ -18,7 +18,7 @@ import ewimberley.ml.Learner;
  *            the type being predicted
  */
 public abstract class NeuralNetwork<Y> extends Learner<Y> {
-	
+
 	private String id;
 
 	protected Map<String, Neuron> neurons;
@@ -31,12 +31,10 @@ public abstract class NeuralNetwork<Y> extends Learner<Y> {
 
 	protected Map<OutputNeuron, Y> outputs;
 
-	protected int numHiddenLayers;
-
-	protected int numNeuronsPerLayer;
+	private NeuralNetworkTrainingConfiguration config;
 
 	private double learningRate;
-
+	
 	private double annealingRate;
 
 	public NeuralNetwork(double[][] data, Y[] y) {
@@ -121,25 +119,11 @@ public abstract class NeuralNetwork<Y> extends Learner<Y> {
 	}
 
 	public int getNumHiddenLayers() {
-		return numHiddenLayers;
-	}
-
-	public void setNumHiddenLayers(int numHiddenLayers) {
-		if (numHiddenLayers < 1) {
-			throw new IllegalArgumentException("Number of hidden layers must be at least 1.");
-		}
-		this.numHiddenLayers = numHiddenLayers;
+		return config.getNumHiddenLayers();
 	}
 
 	public int getNumNeuronsPerLayer() {
-		return numNeuronsPerLayer;
-	}
-
-	public void setNumNeuronsPerLayer(int numNeuronsPerLayer) {
-		if (numNeuronsPerLayer < 1) {
-			throw new IllegalArgumentException("Number of neurons per layer must be at least 1.");
-		}
-		this.numNeuronsPerLayer = numNeuronsPerLayer;
+		return config.getNumNeuronsPerLayer();
 	}
 
 	public double getLearningRate() {
@@ -177,14 +161,34 @@ public abstract class NeuralNetwork<Y> extends Learner<Y> {
 
 	/**
 	 * Get the unique id of this network.
+	 * 
 	 * @return the unique id string.
 	 */
 	public String getId() {
 		return id;
 	}
-	
+
 	protected void generateNewId() {
 		id = java.util.UUID.randomUUID().toString();
+	}
+
+	/**
+	 * Get the training configuration.
+	 * 
+	 * @return the training configuration object
+	 */
+	public NeuralNetworkTrainingConfiguration getConfig() {
+		return config;
+	}
+
+	/**
+	 * Set the training configuration.
+	 * 
+	 * @param config
+	 *            the training configuration object
+	 */
+	public void setConfig(NeuralNetworkTrainingConfiguration config) {
+		this.config = config;
 	}
 
 }

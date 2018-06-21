@@ -2,6 +2,8 @@ package ewimberley.ml.ann.gnn.regression;
 
 import org.junit.Test;
 
+import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
+
 public class RegressionGenticNeuralNetworkTest {
 
 	@Test
@@ -14,9 +16,15 @@ public class RegressionGenticNeuralNetworkTest {
 			values[i] = i*i;
 		}
 		//XXX not working
+		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
+		config.setNumNetworksPerGeneration(100);
+		config.setNumGenerations(1000);
+		config.setNumHiddenLayers(5);
+		config.setNumNeuronsPerLayer(12);
+		config.setMaxLearningRate(100.0);
 		RegressionGenticNeuralNetwork bestNetwork = (RegressionGenticNeuralNetwork) RegressionGenticNeuralNetwork
 				//.train(data, values, 1000, 2000, 4, 10, 100.0);
-				.train(data, values, 2000, 10000, 5, 10, 100.0, null);
+				.train(data, values, config);
 		//assertTrue(bestNetwork.getAverageError() < 1.0);
 		System.out.println(bestNetwork.getAverageError());
 		

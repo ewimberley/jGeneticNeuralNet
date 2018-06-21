@@ -6,13 +6,14 @@ import static org.junit.Assert.assertNotEquals;
 import org.junit.Test;
 
 import ewimberley.ml.ann.gnn.ContinuousHiddenNeuron;
+import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
 import ewimberley.ml.ann.gnn.classifier.ClassificationGenticNeuralNetwork;
 
 public class ContinuousHiddenNeuronTest {
 
 	@Test
 	public void testActivationSum() {
-		ClassificationGenticNeuralNetwork network = new ClassificationGenticNeuralNetwork(null, null);
+		GenticNeuralNetwork<String> network = new ClassificationGenticNeuralNetwork(null, null);
 		InputNeuron n1 = new InputNeuron(network);
 		n1.setInput(1.0);
 		network.addInput(n1);

@@ -37,16 +37,17 @@ public class ANNVisualizer extends JPanel {
 
 	private void doDrawing(Graphics g) {
 		g2d = (Graphics2D) g;
+		g2d.setBackground(new Color(255, 255, 255));
 		g2d.clearRect(0, 0, width, height);
 		g2d.setStroke(new BasicStroke(2));
 		RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		rh.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		g2d.setRenderingHints(rh);
-		Color grey = new Color(150, 150, 150);
 		Color black = new Color(0, 0, 0);
+		Color grey = new Color(150, 150, 150);
 		Color green = new Color(0, 150, 0);
 		Color blue = new Color(0, 0, 150);
-		Color currentColor = grey;
+		Color currentColor = black;
 		// draw edges
 		g2d.setPaint(grey);
 		for (Map.Entry<String, NeuronCircle> neuronEntry : neurons.entrySet()) {

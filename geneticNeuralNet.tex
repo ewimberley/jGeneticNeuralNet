@@ -1,5 +1,6 @@
 \documentclass[twocolumn]{article}
-\usepackage{lipsum,scrextend,mathtools,float,xspace,algorithm,algpseudocode}
+\usepackage{lipsum,scrextend,mathtools,float,xspace,algorithm,algpseudocode,tabularx}
+\usepackage[table]{xcolor}
 \usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
 \addbibresource{geneticNeuralNet.bib}  
 
@@ -16,7 +17,6 @@
 		\EndFunction
 	\end{algorithmic} \end{algorithm}
 }
-
 
 %figure(file name, label, scale, caption)
 \newcommand\fig[5]{
@@ -162,6 +162,7 @@ For a fully connected neural network with $N$ layers and $M$ neurons per layer, 
 
 \subsection{Usage}
 
+TODO update with config object
 \code{
 String dataFile = "src/test/resources/iris.data"; \\
 DataLoader dl = new DataLoader(); \\
@@ -173,7 +174,17 @@ dl.getData(), dl.getClassLabels(), 1000, 500, 5, 8, 100.0);
 \subsection{Tests}
 
 \section{Results}
-\lipsum[2]
+
+\begin{center}
+\begin{tabular}{ l c c c }
+Expected & Iris-versicolor & Iris-virginica & Iris-setosa \\
+Iris-versicolor & 8 & 1 & 0 \\ 
+Iris-virginica & 0 & 10 & 0 \\
+Iris-setosa & 0 & 0 & 12
+\end{tabular}
+\end{center}
+
+Accuracy: 0.967741935483871
 
 \subsection{Classification}
 

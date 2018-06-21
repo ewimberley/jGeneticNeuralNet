@@ -3,6 +3,7 @@ package ewimberley.ml.ann.gnn.classifier;
 import java.util.List;
 
 import ewimberley.ml.ann.gnn.GeneticNeuralNetworkWorker;
+import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
 
 /**
  * A thread that trains classification networks.

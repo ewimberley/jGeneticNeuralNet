@@ -20,12 +20,15 @@ public abstract class GeneticNeuron extends NeuronImpl {
 
 	private static final double HALF = 0.5;
 
-	//FIXME make these dynamic
-	private static final double PROB_MUTATE_EDGES = 0.1;
+	/*
+	 * These are default values if they aren't set in the config. 
+	 */
+	
+	private double probMutateEdges = 0.01;
 
-	private static final double PROB_MUTATE_BIAS = 0.1;
+	private double probMutateBias = 0.02;
 
-	private static final double PROB_MUTATE_SYNAPSE_WEIGHT = 0.1;
+	private double probMutateWeights = 0.05;
 
 	/**
 	 * Make a deep clone of a continuous neuron.
@@ -38,7 +41,22 @@ public abstract class GeneticNeuron extends NeuronImpl {
 	public GeneticNeuron(NeuralNetwork<?> network, NeuronImpl toClone) {
 		super(network, toClone);
 		this.bias = toClone.getBias();
-		this.activationFunction = ActivationFunction.ARCTAN;
+		this.activationFunction = toClone.getActivationFunction();
+		
+		double configMutateEdges = network.getConfig().getProbMutateEdges();
+		if(configMutateEdges > 0.0) {
+			probMutateEdges = configMutateEdges;
+		}
+		
+		double configMutateBias = network.getConfig().getProbMutateBias();
+		if(configMutateBias > 0.0) {
+			probMutateBias = configMutateBias;
+		}
+		
+		double configMutateWeights = network.getConfig().getProbMutateWeights();
+		if(configMutateWeights > 0.0) {
+			probMutateWeights = configMutateWeights;
+		}
 	}
 
 	public GeneticNeuron(NeuralNetwork<?> network) {
@@ -64,14 +82,14 @@ public abstract class GeneticNeuron extends NeuronImpl {
 	 */
 	public void mutate() {
 		double mutateBias = network.getRandomDouble();
-		if (mutateBias <= PROB_MUTATE_BIAS) {
+		if (mutateBias <= probMutateBias) {
 			boolean biasNegative = (network.getRandomDouble() > HALF);
 			double deltaBias = network.getRandomDouble() * (biasNegative ? -1.0 : 1.0) * network.getLearningRate();
 			setBias(getBias() + deltaBias);
 		}
 		for (String nextNeuron : nextWeights.keySet()) {
 			double mutateSynapseWeight = network.getRandomDouble();
-			if (mutateSynapseWeight <= PROB_MUTATE_SYNAPSE_WEIGHT) {
+			if (mutateSynapseWeight <= probMutateWeights) {
 				boolean weightNegative = (network.getRandomDouble() > HALF);
 				double deltaWeight = (network.getRandomDouble() * (weightNegative ? -1.0 : 1.0))
 						* network.getLearningRate();
@@ -84,7 +102,7 @@ public abstract class GeneticNeuron extends NeuronImpl {
 
 	private void mutateStructure() {
 		double mutateEdges = network.getRandomDouble();
-		if (mutateEdges <= PROB_MUTATE_EDGES) {
+		if (mutateEdges <= probMutateEdges) {
 			boolean addNeuron = (network.getRandomDouble() > HALF);
 			if (addNeuron) {
 				String nextNeuronId = getRandomNeuronInLaterLayer();

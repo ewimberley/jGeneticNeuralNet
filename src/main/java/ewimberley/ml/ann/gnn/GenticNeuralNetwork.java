@@ -68,8 +68,9 @@ public abstract class GenticNeuralNetwork<Y> extends NeuralNetwork<Y> {
 
 	public GenticNeuralNetwork(double[][] data, Y[] y) {
 		super(data, y);
-		setLearningRate(0.10); // reasonable default
-		setAnnealingRate(0.000001);
+		//setLearningRate(0.10); // reasonable default
+		//setAnnealingRate(0.000001);
+		setAnnealingRate(0.0);
 		averageError = -1.0;
 	}
 

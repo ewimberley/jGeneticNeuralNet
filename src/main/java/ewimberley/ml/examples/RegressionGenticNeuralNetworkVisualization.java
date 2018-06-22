@@ -30,7 +30,7 @@ public class RegressionGenticNeuralNetworkVisualization extends JFrame {
 		vis = new ANNVisualizer(WIDTH, HEIGHT);
 		add(vis);
 
-		setTitle("Basic shapes");
+		setTitle("Regression Neural Network Visualization");
 		setSize(WIDTH, HEIGHT);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -44,16 +44,15 @@ public class RegressionGenticNeuralNetworkVisualization extends JFrame {
 			data[i][0] = i;
 			values[i] = i * i;
 		}				
-		// XXX not working
 		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
-		config.setNumNetworksPerGeneration(100);
-		config.setNumGenerations(1000);
-		config.setNumHiddenLayers(5);
-		config.setNumNeuronsPerLayer(12);
-		config.setMaxLearningRate(100.0);
+		config.setNumNetworksPerGeneration(1000);
+		config.setNumGenerations(500);
+		config.setNumHiddenLayers(2);
+		config.setNumNeuronsPerLayer(6);
+		config.setMaxLearningRate(1.0);
 		config.setVisualizer(vis);
+		config.setProbMutateActivationFunction(0.1);
 		RegressionGenticNeuralNetwork bestNetwork = (RegressionGenticNeuralNetwork) RegressionGenticNeuralNetwork.train(data, values, config);
-				//.train(data, values, 2000, 10000, 5, 10, 100.0);
 		// assertTrue(bestNetwork.getAverageError() < 1.0);
 		System.out.println(bestNetwork.getAverageError());
 

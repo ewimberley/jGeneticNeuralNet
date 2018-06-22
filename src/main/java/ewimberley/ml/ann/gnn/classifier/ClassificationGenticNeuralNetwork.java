@@ -94,7 +94,6 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 			network.scramble();
 			population.add(network);
 			bestNetwork = network;
-			// network.printNetwork();
 		}
 		for (int gen = 1; gen <= config.getNumGenerations(); gen++) {
 			if ((gen % GENERATIONAL_DEBUG_INTERVAL) == 0) {
@@ -104,12 +103,12 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 			List<GeneticNeuralNetworkWorker<?, ?>> workers = new ArrayList<GeneticNeuralNetworkWorker<?, ?>>();
 			int numNetworks = 0;
 			double numChildrenPerNetwork = config.getNumNetworksPerGeneration() / 100;
-			if (numChildrenPerNetwork < 10.0) {
-				numChildrenPerNetwork = 10.0;
+			if (numChildrenPerNetwork < 30.0) {
+				numChildrenPerNetwork = 30.0;
 			}
 			while (numNetworks < config.getNumNetworksPerGeneration()) {
 				if (numChildrenPerNetwork > 1) {
-					numChildrenPerNetwork -= 0.25;
+					numChildrenPerNetwork -= 1.0;
 				}
 				int intNumChildrenPerNetwork = (int) Math.ceil(numChildrenPerNetwork);
 				ClassificationGenticNeuralNetwork network = (ClassificationGenticNeuralNetwork) population.poll();
@@ -133,11 +132,11 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 					if (i > 0) {
 						System.out.print(", ");
 					}
-					System.out.print(topNetworkArray[i].getAverageError());
+					System.out.print(String.format("%.5f",topNetworkArray[i].getAverageError()));
 				}
 				System.out.println("]");
 				if (config.getVisualizer() != null) {
-					config.getVisualizer().drawNetwork(topNetworkArray[0]);
+					config.getVisualizer().drawNetwork(topNetworkArray[0], gen);
 					config.getVisualizer().repaint();
 				}
 			}

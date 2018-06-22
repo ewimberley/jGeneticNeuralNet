@@ -35,7 +35,7 @@ public class IrisGNNExample extends JFrame {
 		dl.loadCSVFile(dataFile);
 		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
 		config.setNumNetworksPerGeneration(1000);
-		config.setNumGenerations(100);
+		config.setNumGenerations(300);
 		config.setNumHiddenLayers(5);
 		config.setNumNeuronsPerLayer(8);
 		config.setMaxLearningRate(100.0);
@@ -49,8 +49,7 @@ public class IrisGNNExample extends JFrame {
 	private void initUI() {
 		vis = new ANNVisualizer(WIDTH, HEIGHT);
 		add(vis);
-
-		setTitle("Yeast Neural Network Visualizer");
+		setTitle("Iris Neural Network Visualizer");
 		setSize(WIDTH, HEIGHT);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

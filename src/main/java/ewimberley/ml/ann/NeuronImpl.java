@@ -37,6 +37,8 @@ public abstract class NeuronImpl implements Neuron {
 	protected double memoizedActivation;
 
 	protected ActivationFunction activationFunction;
+	
+	private boolean activationLocked;
 
 	/**
 	 * Make a deep clone of a neuron.
@@ -234,6 +236,14 @@ public abstract class NeuronImpl implements Neuron {
 
 	public void setActivationFunction(ActivationFunction activationFunction) {
 		this.activationFunction = activationFunction;
+	}
+
+	public boolean isActivationLocked() {
+		return activationLocked;
+	}
+
+	public void setActivationLocked(boolean activationLocked) {
+		this.activationLocked = activationLocked;
 	}
 
 	//TODO write a toString() for this that makes sense and call it from child classes

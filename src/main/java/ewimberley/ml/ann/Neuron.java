@@ -93,4 +93,18 @@ public interface Neuron {
 	 */
 	void addPrev(String prev);
 
+	/**
+	 * Get the bias of this neuron.
+	 * 
+	 * @return the bias
+	 */
+	double getBias();
+
+	/**
+	 * Get the activation function this neuron uses.
+	 * 
+	 * @return the activation function enum
+	 */
+	ActivationFunction getActivationFunction();
+
 }

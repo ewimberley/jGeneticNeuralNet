@@ -6,21 +6,35 @@ import ewimberley.ml.ann.NeuralNetwork;
 
 public class ContinuousHiddenNeuron extends GeneticNeuron implements HiddenNeuron {
 
-	private static final double PROB_MUTATE_ACTIVATION_FUNC = 0.03;
+	/*
+	 * A default mutation rate in case it isn't set in the config.
+	 */
+	
+	private double probMutateActivationFunction = 0.03;
 
 	public ContinuousHiddenNeuron(NeuralNetwork<?> network, ContinuousHiddenNeuron toClone) {
 		super(network, toClone);
+		
+		double configMutateActivationFunction = network.getConfig().getProbMutateActivationFunction();
+		if(configMutateActivationFunction > 0.0) {
+			probMutateActivationFunction = configMutateActivationFunction;
+		}
 	}
 
 	public ContinuousHiddenNeuron(NeuralNetwork<?> network) {
 		super(network);
+		
+		double configMutateActivationFunction = network.getConfig().getProbMutateActivationFunction();
+		if(configMutateActivationFunction > 0.0) {
+			probMutateActivationFunction = configMutateActivationFunction;
+		}
 	}
 
 	@Override
 	public void mutate() {
 		super.mutate();
 		double mutateActivationFunc = network.getRandomDouble();
-		if (mutateActivationFunc <= PROB_MUTATE_ACTIVATION_FUNC) {
+		if (mutateActivationFunc <= probMutateActivationFunction) {
 			int activationFunc = network.getRandInt(0, 4);
 			activationFunction = ActivationFunction.values()[activationFunc];
 		}

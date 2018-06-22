@@ -14,8 +14,6 @@ import ewimberley.ml.ann.OutputNeuron;
  *
  */
 public class ContinuousOutputNeuron extends GeneticNeuron implements OutputNeuron {
-
-	//XXX only allow activation functions with range 0.0 to 1.0
 	
 	public ContinuousOutputNeuron(NeuralNetwork<?> network, ContinuousOutputNeuron toClone) {
 		super(network, toClone);

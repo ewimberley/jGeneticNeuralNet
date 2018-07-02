@@ -68,6 +68,14 @@ public class ANNVisualizer extends JPanel {
 		inputs = new ArrayList<JTextField>();
 		inputsInit = false;
 	}
+	
+	private Color redBlueSpectrum(double min, double max, double value) {
+		//red is max, blue is min
+		double ratio = (value + Math.abs(min)) / Math.abs(max - min);
+		int red = (int) (255 * ratio);
+		int blue = (int) (255 * (1.0 - ratio));
+		return new Color(red, 20, blue);
+	}
 
 	private void doDrawing(Graphics g) {
 		g2d = (Graphics2D) g;
@@ -75,7 +83,7 @@ public class ANNVisualizer extends JPanel {
 		int radius = NODE_DIAMETER / 2;
 		g2d.setBackground(WHITE);
 		g2d.clearRect(0, 0, width, height);
-		// g2d.setStroke(new BasicStroke(2));
+		g2d.setStroke(new BasicStroke(2));
 		RenderingHints rh = new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		rh.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 		g2d.setRenderingHints(rh);
@@ -85,6 +93,19 @@ public class ANNVisualizer extends JPanel {
 			g2d.drawString("Generation number: " + generationNums.get(displayNetwork - 1), 10, 10);
 		}
 		// draw edges
+		double maxWeight = Double.MIN_VALUE;
+		double minWeight = Double.MAX_VALUE;
+		for (Map.Entry<String, NeuronCircle> neuronEntry : neurons.entrySet()) {
+			NeuronCircle neuron = neuronEntry.getValue();
+			for (String linkId : neuron.getLinks()) {
+				Double weight = neuron.getWeights().get(linkId);
+				if(weight > maxWeight) {
+					maxWeight = weight;
+				} else if(weight < minWeight) {
+					minWeight = weight;
+				}
+			}
+		}
 		Map<String, Integer> weightYOffsets = new HashMap<String, Integer>();
 		for (Map.Entry<String, NeuronCircle> neuronEntry : neurons.entrySet()) {
 			NeuronCircle neuron = neuronEntry.getValue();
@@ -95,12 +116,14 @@ public class ANNVisualizer extends JPanel {
 					weightYOffsets.put(linkId, weightYOffsets.get(linkId) + 10);
 				}
 				NeuronCircle other = neurons.get(linkId);
-				g2d.setPaint(GREY);
+				//g2d.setPaint(GREY);
+				g2d.setPaint(redBlueSpectrum(minWeight, maxWeight, neuron.getWeights().get(linkId)));
 				g2d.drawLine(neuron.getX() + radius, neuron.getY() + radius, other.getX() + radius,
 						other.getY() + radius);
-				g2d.setPaint(BLACK);
-				g2d.drawString(String.format("%.2f", neuron.getWeights().get(linkId)), other.getX() - NODE_DIAMETER,
-						other.getY() + weightYOffsets.get(linkId));
+				// g2d.setPaint(BLACK);
+				// g2d.drawString(String.format("%.2f", neuron.getWeights().get(linkId)),
+				// other.getX() - NODE_DIAMETER,
+				// other.getY() + weightYOffsets.get(linkId));
 			}
 		}
 		// draw nodes

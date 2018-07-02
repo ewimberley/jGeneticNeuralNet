@@ -107,12 +107,14 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 			List<GeneticNeuralNetworkWorker<?, ?>> workers = new ArrayList<GeneticNeuralNetworkWorker<?, ?>>();
 			int numNetworks = 0;
 			double numChildrenPerNetwork = config.getNumNetworksPerGeneration() / 100;
-			if (numChildrenPerNetwork < 30.0) {
-				numChildrenPerNetwork = 30.0;
+			if (numChildrenPerNetwork < 50.0) {
+				numChildrenPerNetwork = 50.0;
 			}
 			while (numNetworks < config.getNumNetworksPerGeneration()) {
 				if (numChildrenPerNetwork > 1) {
-					numChildrenPerNetwork -= 1.0;
+					numChildrenPerNetwork -= 5.0;
+				} else {
+					numChildrenPerNetwork = 1.0;
 				}
 				int intNumChildrenPerNetwork = (int) Math.ceil(numChildrenPerNetwork);
 				RegressionGenticNeuralNetwork network = (RegressionGenticNeuralNetwork) population.poll();

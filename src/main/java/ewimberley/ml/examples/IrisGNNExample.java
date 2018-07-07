@@ -3,8 +3,8 @@ package ewimberley.ml.examples;
 import javax.swing.JFrame;
 
 import ewimberley.ml.DataLoader;
-import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
+import ewimberley.ml.ann.gnn.GeneticNeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.gnn.classifier.ClassificationGenticNeuralNetwork;
 import ewimberley.ml.ann.visualizer.ANNVisualizer;
 
@@ -33,12 +33,13 @@ public class IrisGNNExample extends JFrame {
 		String dataFile = "src/test/resources/iris.data";
 		DataLoader dl = new DataLoader();
 		dl.loadCSVFile(dataFile);
-		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
+		GeneticNeuralNetworkTrainingConfiguration config = new GeneticNeuralNetworkTrainingConfiguration();
 		config.setNumNetworksPerGeneration(3000);
 		config.setNumGenerations(500);
 		config.setNumHiddenLayers(3);
 		config.setNumNeuronsPerLayer(8);
 		config.setMaxLearningRate(10.0);
+		config.setMaxThreads(Runtime.getRuntime().availableProcessors() * 2);
 		config.setVisualizer(vis);
 		GenticNeuralNetwork<String> model = ClassificationGenticNeuralNetwork.train(dl.getData(), dl.getClassLabels(), config);
 		model.printNetwork();

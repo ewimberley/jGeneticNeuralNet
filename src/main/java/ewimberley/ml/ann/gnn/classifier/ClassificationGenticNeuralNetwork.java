@@ -14,7 +14,6 @@ import java.util.concurrent.Executors;
 import ewimberley.ml.ConfusionMatrix;
 import ewimberley.ml.ann.InputNeuron;
 import ewimberley.ml.ann.NeuralNetwork;
-import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.Neuron;
 import ewimberley.ml.ann.NeuronImpl;
 import ewimberley.ml.ann.OutputNeuron;
@@ -23,6 +22,7 @@ import ewimberley.ml.ann.gnn.ContinuousOutputNeuron;
 import ewimberley.ml.ann.gnn.GeneticNeuralNetworkWorker;
 import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
 import ewimberley.ml.ann.gnn.GenticNeuralNetworkErrorComparator;
+import ewimberley.ml.ann.gnn.GeneticNeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.gnn.regression.RegressionGenticNeuralNetwork;
 import ewimberley.ml.ann.visualizer.ANNVisualizer;
 
@@ -57,11 +57,11 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 					(InputNeuron) neurons.get(inputMappingEntry.getValue().getUuid()));
 		}
 		this.setLayers(toClone.getLayers());
-		setLearningRate(toClone.getLearningRate() * (1.0 - config.getAnnealingRate()));
+		setLearningRate(toClone.getLearningRate() * (1.0 - ((GeneticNeuralNetworkTrainingConfiguration)config).getAnnealingRate()));
 	}
 
 	public static ClassificationGenticNeuralNetwork train(double[][] data, String[] classLabels,
-			NeuralNetworkTrainingConfiguration config) {
+			GeneticNeuralNetworkTrainingConfiguration config) {
 		ConfusionMatrix cf = new ConfusionMatrix(classLabels);
 
 		// FIXME implement 10-fold cross validation
@@ -99,7 +99,7 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 			if ((gen % GENERATIONAL_DEBUG_INTERVAL) == 0) {
 				System.out.print("On generation " + gen + " Population size: " + population.size());
 			}
-			ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+			ExecutorService executor = Executors.newFixedThreadPool(config.getMaxThreads());
 			List<GeneticNeuralNetworkWorker<?, ?>> workers = new ArrayList<GeneticNeuralNetworkWorker<?, ?>>();
 			int numNetworks = 0;
 			double numChildrenPerNetwork = config.getNumNetworksPerGeneration() / 100;

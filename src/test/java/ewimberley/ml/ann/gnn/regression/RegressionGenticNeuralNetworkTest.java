@@ -2,7 +2,7 @@ package ewimberley.ml.ann.gnn.regression;
 
 import org.junit.Test;
 
-import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
+import ewimberley.ml.ann.gnn.GeneticNeuralNetworkTrainingConfiguration;
 
 public class RegressionGenticNeuralNetworkTest {
 
@@ -16,7 +16,7 @@ public class RegressionGenticNeuralNetworkTest {
 			values[i] = i*i;
 		}
 		//XXX not working
-		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
+		GeneticNeuralNetworkTrainingConfiguration config = new GeneticNeuralNetworkTrainingConfiguration();
 		config.setNumNetworksPerGeneration(100);
 		config.setNumGenerations(1000);
 		config.setNumHiddenLayers(5);

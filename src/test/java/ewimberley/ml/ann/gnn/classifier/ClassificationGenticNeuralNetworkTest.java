@@ -6,8 +6,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import ewimberley.ml.DataLoader;
-import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
+import ewimberley.ml.ann.gnn.GeneticNeuralNetworkTrainingConfiguration;
 
 public class ClassificationGenticNeuralNetworkTest {
 
@@ -21,7 +21,7 @@ public class ClassificationGenticNeuralNetworkTest {
 		String dataFile = "src/test/resources/iris.data";
 		DataLoader dl = new DataLoader();
 		dl.loadCSVFile(dataFile);
-		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
+		GeneticNeuralNetworkTrainingConfiguration config = new GeneticNeuralNetworkTrainingConfiguration();
 		config.setNumNetworksPerGeneration(100);
 		config.setNumGenerations(1000);
 		config.setNumHiddenLayers(5);
@@ -40,7 +40,7 @@ public class ClassificationGenticNeuralNetworkTest {
 		String[] labels = new String[2];
 		labels[0] = "Test";
 		labels[1] = "Test2";
-		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
+		GeneticNeuralNetworkTrainingConfiguration config = new GeneticNeuralNetworkTrainingConfiguration();
 		config.setNumNetworksPerGeneration(100);
 		config.setNumGenerations(1000);
 		config.setNumHiddenLayers(5);

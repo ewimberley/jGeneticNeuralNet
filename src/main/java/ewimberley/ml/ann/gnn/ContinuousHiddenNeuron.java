@@ -15,7 +15,7 @@ public class ContinuousHiddenNeuron extends GeneticNeuron implements HiddenNeuro
 	public ContinuousHiddenNeuron(NeuralNetwork<?> network, ContinuousHiddenNeuron toClone) {
 		super(network, toClone);
 		
-		double configMutateActivationFunction = network.getConfig().getProbMutateActivationFunction();
+		double configMutateActivationFunction = ((GeneticNeuralNetworkTrainingConfiguration)network.getConfig()).getProbMutateActivationFunction();
 		if(configMutateActivationFunction > 0.0) {
 			probMutateActivationFunction = configMutateActivationFunction;
 		}
@@ -24,7 +24,7 @@ public class ContinuousHiddenNeuron extends GeneticNeuron implements HiddenNeuro
 	public ContinuousHiddenNeuron(NeuralNetwork<?> network) {
 		super(network);
 		
-		double configMutateActivationFunction = network.getConfig().getProbMutateActivationFunction();
+		double configMutateActivationFunction = ((GeneticNeuralNetworkTrainingConfiguration)network.getConfig()).getProbMutateActivationFunction();
 		if(configMutateActivationFunction > 0.0) {
 			probMutateActivationFunction = configMutateActivationFunction;
 		}

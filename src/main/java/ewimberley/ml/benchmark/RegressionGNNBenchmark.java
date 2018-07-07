@@ -4,7 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
+import ewimberley.ml.ann.gnn.GeneticNeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.gnn.regression.RegressionGenticNeuralNetwork;
 
 public class RegressionGNNBenchmark {
@@ -30,12 +30,14 @@ public class RegressionGNNBenchmark {
 			data[i][0] = i;
 			values[i] = i * i;
 		}
-		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
+		GeneticNeuralNetworkTrainingConfiguration config = new GeneticNeuralNetworkTrainingConfiguration();
 		config.setNumNetworksPerGeneration(1000);
 		config.setNumHiddenLayers(2);
 		config.setNumNeuronsPerLayer(6);
 		config.setMaxLearningRate(1.0);
 		config.setProbMutateActivationFunction(0.1);
+		config.setMaxThreads(Runtime.getRuntime().availableProcessors() * 2);
+		
 		try {
 			FileWriter fileWriter = new FileWriter("/home/ewimberley/xsquared_benchmark.csv");
 			PrintWriter printWriter = new PrintWriter(fileWriter);

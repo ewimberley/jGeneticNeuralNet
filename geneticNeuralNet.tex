@@ -11,7 +11,7 @@
 }
 
 \newcommand\pcode[5]{
-	\begin{algorithm} \caption{#1} \label{pcode:#2} \begin{algorithmic}[1]
+	\begin{algorithm}[H] \caption{#1} \label{pcode:#2} \begin{algorithmic}[1]
 		\Function{#3}{#4} 
 			#5
 		\EndFunction
@@ -38,7 +38,9 @@
 \maketitle
 
 \begin{abstract}
-\lipsum[1]
+Genetic neural networks, first characterized in 1989, have generally taken a back seat to training algorithms with a better time complexity. However, the more complex neural networks being used for image, video, and audio processing today use varying structures. Gradient descent algorithms are good at quantitative error reduction, but qualitative properties such as network structure must be determined with alternative algorithms.
+
+Genetic algorithms are capable of evolving both quantitative properties of networks such as edge weights and bias, as well as quantitative properies such as which activation function to use and network structure. jGeneticNeuralNet is a Java implementation of a neural network and associated training algorithms for classification and regression that uses such a genetic algorithm to train networks.
 \end{abstract}
 
 \section{Introduction}
@@ -48,7 +50,7 @@ Genetic neural networks (GNNs) are learning algorithms that use neural networks 
 A visualization of a classification network with 8 input variables (green) and 10 output classes (blue). There are 5 hidden layers of 10 nodes each (black);
 }
 
-Genetic algorithms (GAs) are algorithms that use random mutations of solutions to optimimize some function of a system. They mimic genetic evolution of organisms in nature. While a random search of the problem space may seem less than optimal, it is can be easily parallelized~\cite{Tanese:1989:DGA:915973}.
+Genetic algorithms (GAs) are algorithms that use random mutations of solutions to optimimize some function of a system. They mimic genetic evolution of organisms in nature. While a random search of the problem space may seem less than optimal, progress is saved as a set of the best solutions so far, and the process can be easily parallelized~\cite{Tanese:1989:DGA:915973}.
 
 More recent implementations allow for the structure of the network to mutate~\cite{LamStructure}. This allows networks to form more optimal structures for a particular problem space, as well as to optimize networks for size and complexity. For example, a GNN could automatically form a Convolutional Neural Network (CNN), which is optimal for problems such as handwritten character recognition~\cite{ConvolutionalCharacterClassification}, and classification on other complex data. 
 
@@ -125,12 +127,28 @@ The visualization in \figRef{enhancedVis} below shows a network that was trained
 A visualization with lowest edge weights in blue and highest edge weights in red. Biases 
 }
 
+\subsection{Fitness}
+
+While it is common for genetic algorithms to maximize a fitness variable, the GNN training algorithm minimizes error instead. This means that the ``fitness'' function is really the inverse of what is normally considered fitness.
+
+\pcode{Fitness Algorithm}{fitness}{fitness}{$training$}{
+	\State $avgError = 0.0$
+	\For{$datum$ in $training$}
+		\State $e = abs(datum.out - predict(datum.in))$
+		\State $avgError = avgError + e$
+	\EndFor
+	\State return $averageError / len(training)$
+}
+
+
 \section{Optimizations}
-The network training algorithm employs several important optimizations:
+Training genetic neural networks is computationally expensive. Thousands of networks must be evaluated during selection of the final model. Therefore, the network training algorithm employs several important optimizations:
 
 \begin{itemize}
  	\item Each network is trained in a seperate thread
 	\item Memoization of neuron output  
+	\item Memoization of average network error
+	\item Most fit networks produce more offspring
 	\item Random sub-sampling of the training data during training error estimation 
 \end{itemize}
 
@@ -138,12 +156,12 @@ The network training algorithm employs several important optimizations:
 
 Networks are judged for fitness by computing the average error on training samples. This can be computed in an embarassingly parellel fashion by running one thread per network. As shown in the pseudocode below, a job to compute the fitness of a network is executed in a thread pool, which can be configured with a maximum number of threads depending on hardware.
 
-\pcode{Training Algorithm}{train}{train}{$config$}{
+\pcode{Training Algorithm}{train}{train}{$c$}{
 	\State $pool=$ fitness computing thread pool
 	\State $pop=$ network queue ordered by fitness
 	\State $offspring=$ job queue ordered by fitness
 	\State $survivors=$ network queue ordered by fitness 
-	\For{$generation < config.maxGens$}
+	\For{$generation < c.maxGens$}
 		\For{$nework$ in $population$} 
 			\State $pool.execute(new Job(network))$
 		\EndFor
@@ -156,12 +174,14 @@ Networks are judged for fitness by computing the average error on training sampl
 			\State $offspring.add(pool.getJob(i))$
 			\State i = i + 1
 		\EndWhile
-		\While{$survivors.size < config.population$}
-			\State $survivors.add(offpring.poll().getNetwork())$
+		\While{$len(survivors) < c.population$}
+			\State $survivors.add(offpring.poll().network)$
 		\EndWhile
 		\State $population = survivors$
 	\EndFor
 }
+
+Inside each thread the original network is cloned, mutated, and then evaluated for average error. This minimizes the 
 
 \subsection{Activation Function Memoization}
 
@@ -222,39 +242,6 @@ Expected & Predicted \\
 
 Mean squared error: 0.3971038018343635
 
-\subsection{Usage}
-To create a classifier network, use $ClassificationGenticNeuralNetwork.train$ as shown below. Training configuration and hyperparameters are stored in a NeuralNetworkTrainingConfiguration object.
-
-\code{
-\tiny
-String dataFile = "src/test/resources/iris.data"; \\
-DataLoader dl = new DataLoader(); \\
-dl.loadCSVFile(dataFile); \\
-NeuralNetworkTrainingConfiguration config = \\ new NeuralNetworkTrainingConfiguration(); \\
-config.setNumNetworksPerGeneration(3000); \\
-config.setNumGenerations(500); \\ 
-config.setNumHiddenLayers(3); \\
-config.setNumNeuronsPerLayer(8); \\
-config.setMaxLearningRate(10.0); \\
-config.setVisualizer(vis); \\
-GenticNeuralNetwork<String> model = \\ ClassificationGenticNeuralNetwork.train(dl.getData(),  dl.getClassLabels(), config);
-}
-
-A regression network is created with $RegressionGenticNeuralNetwork.train$ instead, such as the example below which was trained on the $x^2$ function.
-
-\code{
-\tiny
-NeuralNetworkTrainingConfiguration config = \\ new NeuralNetworkTrainingConfiguration(); \\
-config.setNumNetworksPerGeneration(1000); \\
-config.setNumGenerations(500); \\ 
-config.setNumHiddenLayers(2); \\
-config.setNumNeuronsPerLayer(6); \\
-config.setMaxLearningRate(1.0); \\
-config.setVisualizer(vis); \\
-config.setProbMutateActivationFunction(0.1); \\
-RegressionGenticNeuralNetwork bestNetwork = \\ RegressionGenticNeuralNetwork.train(data, values, config);
-}
-
 \section{Results}
 
 Classification accuracy for the 3 class Iris problem is shown in \figRef{classificationBenchmark} below. Accuracy increases as exepected with generation number until generation 240. However there was no noticable difference between 240 and 480 generations in terms of average or variance. Some training attempts appear to get stuck in local minima. The average accuracy seems to stabalize at around 0.9.
@@ -270,7 +257,8 @@ Regression mean squared error after 15, 30, 60, 120, 240, and 480 generations.
 }
 
 \section{Conclusion}
-\lipsum[3]
+
+While a genetic algorithm is unlikely to beat backpropagation in terms of time complexity, it has the advantage of optimizing network structure and other qualitative network properties. The algorith was able to train high quality models on known good data sets. Future improvements could include cross-fold validation, computation of AUC ROC, and area under the precision/recall curve to give a more in depth evaluation of models. 
 
 \printbibliography
 

@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 
 import org.junit.Test;
 
-import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
+import ewimberley.ml.ann.gnn.GeneticNeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.gnn.regression.RegressionGenticNeuralNetwork;
 import ewimberley.ml.ann.visualizer.ANNVisualizer;
 
@@ -44,12 +44,13 @@ public class RegressionGenticNeuralNetworkVisualization extends JFrame {
 			data[i][0] = i;
 			values[i] = i * i;
 		}				
-		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
+		GeneticNeuralNetworkTrainingConfiguration config = new GeneticNeuralNetworkTrainingConfiguration();
 		config.setNumNetworksPerGeneration(1000);
 		config.setNumGenerations(1000);
 		config.setNumHiddenLayers(2);
 		config.setNumNeuronsPerLayer(6);
 		config.setMaxLearningRate(1.0);
+		config.setMaxThreads(Runtime.getRuntime().availableProcessors() * 2);
 		config.setVisualizer(vis);
 		config.setProbMutateActivationFunction(0.1);
 		RegressionGenticNeuralNetwork bestNetwork = (RegressionGenticNeuralNetwork) RegressionGenticNeuralNetwork.train(data, values, config);

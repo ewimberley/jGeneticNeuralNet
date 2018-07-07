@@ -14,7 +14,6 @@ import ewimberley.ml.Learner;
 import ewimberley.ml.ann.ActivationFunction;
 import ewimberley.ml.ann.InputNeuron;
 import ewimberley.ml.ann.NeuralNetwork;
-import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.Neuron;
 import ewimberley.ml.ann.NeuronImpl;
 import ewimberley.ml.ann.OutputNeuron;
@@ -23,6 +22,7 @@ import ewimberley.ml.ann.gnn.ContinuousOutputNeuron;
 import ewimberley.ml.ann.gnn.GeneticNeuralNetworkWorker;
 import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
 import ewimberley.ml.ann.gnn.GenticNeuralNetworkErrorComparator;
+import ewimberley.ml.ann.gnn.GeneticNeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.gnn.classifier.ClassificationGenticNeuralNetwork;
 import ewimberley.ml.ann.gnn.classifier.ClassificationGenticNeuralNetworkWorker;
 import ewimberley.ml.ann.visualizer.ANNVisualizer;
@@ -60,10 +60,10 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 					(InputNeuron) neurons.get(inputMappingEntry.getValue().getUuid()));
 		}
 		this.setLayers(toClone.getLayers());
-		setLearningRate(toClone.getLearningRate() * (1.0 - config.getAnnealingRate()));
+		setLearningRate(toClone.getLearningRate() * (1.0 - ((GeneticNeuralNetworkTrainingConfiguration)config).getAnnealingRate()));
 	}
 
-	public static RegressionGenticNeuralNetwork train(double[][] data, double[] yPrim, NeuralNetworkTrainingConfiguration config) {
+	public static RegressionGenticNeuralNetwork train(double[][] data, double[] yPrim, GeneticNeuralNetworkTrainingConfiguration config) {
 		Double[] y = new Double[yPrim.length];
 		for (int i = 0; i < yPrim.length; i++) {
 			y[i] = yPrim[i];
@@ -103,7 +103,7 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 			if ((gen % GENERATIONAL_DEBUG_INTERVAL) == 0) {
 				System.out.print("On generation " + gen + " Population size: " + population.size());
 			}
-			ExecutorService executor = Executors.newFixedThreadPool(NUM_THREADS);
+			ExecutorService executor = Executors.newFixedThreadPool(config.getMaxThreads());
 			List<GeneticNeuralNetworkWorker<?, ?>> workers = new ArrayList<GeneticNeuralNetworkWorker<?, ?>>();
 			int numNetworks = 0;
 			double numChildrenPerNetwork = config.getNumNetworksPerGeneration() / 100;

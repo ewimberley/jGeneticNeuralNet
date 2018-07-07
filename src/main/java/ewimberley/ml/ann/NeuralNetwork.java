@@ -9,6 +9,8 @@ import java.util.Set;
 
 import ewimberley.ml.ConfusionMatrix;
 import ewimberley.ml.Learner;
+import ewimberley.ml.ModelTrainingConfig;
+import ewimberley.ml.ann.gnn.GeneticNeuralNetworkTrainingConfiguration;
 
 /**
  * The parent class of all neural networks.

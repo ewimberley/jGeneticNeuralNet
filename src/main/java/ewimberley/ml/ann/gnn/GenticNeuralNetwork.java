@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 
 import ewimberley.ml.ann.NeuralNetwork;
-import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.Neuron;
 import ewimberley.ml.ann.gnn.classifier.ClassificationGenticNeuralNetworkWorker;
 
@@ -19,9 +18,6 @@ import ewimberley.ml.ann.gnn.classifier.ClassificationGenticNeuralNetworkWorker;
  * @param <Y> the output type of the network
  */
 public abstract class GenticNeuralNetwork<Y> extends NeuralNetwork<Y> {
-
-	// FIXME make this configurable
-	protected static final int NUM_THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
 	protected static void waitForAllWorkers(ExecutorService executor) {
 		executor.shutdown();
@@ -34,7 +30,7 @@ public abstract class GenticNeuralNetwork<Y> extends NeuralNetwork<Y> {
 		}
 	}
 
-	protected static PriorityQueue<GenticNeuralNetwork<?>> repopulate(NeuralNetworkTrainingConfiguration config, PriorityQueue<GenticNeuralNetwork<?>> survivors) {
+	protected static PriorityQueue<GenticNeuralNetwork<?>> repopulate(GeneticNeuralNetworkTrainingConfiguration config, PriorityQueue<GenticNeuralNetwork<?>> survivors) {
 		PriorityQueue<GenticNeuralNetwork<?>> population = new PriorityQueue<GenticNeuralNetwork<?>>(new GenticNeuralNetworkErrorComparator());;
 		int numNetworks = 0;
 		while (numNetworks < config.getNumNetworksPerGeneration()) {

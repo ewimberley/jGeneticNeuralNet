@@ -3,8 +3,8 @@ package ewimberley.ml.examples;
 import javax.swing.JFrame;
 
 import ewimberley.ml.DataLoader;
-import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
+import ewimberley.ml.ann.gnn.GeneticNeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.gnn.classifier.ClassificationGenticNeuralNetwork;
 import ewimberley.ml.ann.visualizer.ANNVisualizer;
 
@@ -29,12 +29,13 @@ public class EcoliGNNExample extends JFrame {
 		String dataFile = "src/test/resources/ecoli.csv";
 		DataLoader dl = new DataLoader();
 		dl.loadCSVFile(dataFile);
-		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
+		GeneticNeuralNetworkTrainingConfiguration config = new GeneticNeuralNetworkTrainingConfiguration();
 		config.setNumNetworksPerGeneration(1000);
 		config.setNumGenerations(50000);
 		config.setNumHiddenLayers(4);
 		config.setNumNeuronsPerLayer(10);
 		config.setMaxLearningRate(3.0);
+		config.setMaxThreads(Runtime.getRuntime().availableProcessors() * 2);
 		config.setVisualizer(vis);
 		GenticNeuralNetwork<String> model = ClassificationGenticNeuralNetwork.train(dl.getData(),
 				dl.getClassLabels(), config);

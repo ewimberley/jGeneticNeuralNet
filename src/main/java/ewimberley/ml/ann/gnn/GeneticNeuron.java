@@ -43,17 +43,17 @@ public abstract class GeneticNeuron extends NeuronImpl {
 		this.bias = toClone.getBias();
 		this.activationFunction = toClone.getActivationFunction();
 		
-		double configMutateEdges = network.getConfig().getProbMutateEdges();
+		double configMutateEdges = ((GeneticNeuralNetworkTrainingConfiguration)network.getConfig()).getProbMutateEdges();
 		if(configMutateEdges > 0.0) {
 			probMutateEdges = configMutateEdges;
 		}
 		
-		double configMutateBias = network.getConfig().getProbMutateBias();
+		double configMutateBias = ((GeneticNeuralNetworkTrainingConfiguration)network.getConfig()).getProbMutateBias();
 		if(configMutateBias > 0.0) {
 			probMutateBias = configMutateBias;
 		}
 		
-		double configMutateWeights = network.getConfig().getProbMutateWeights();
+		double configMutateWeights = ((GeneticNeuralNetworkTrainingConfiguration)network.getConfig()).getProbMutateWeights();
 		if(configMutateWeights > 0.0) {
 			probMutateWeights = configMutateWeights;
 		}

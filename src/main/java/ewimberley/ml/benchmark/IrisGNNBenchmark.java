@@ -7,8 +7,8 @@ import java.io.PrintWriter;
 
 import ewimberley.ml.ConfusionMatrix;
 import ewimberley.ml.DataLoader;
-import ewimberley.ml.ann.NeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.gnn.GenticNeuralNetwork;
+import ewimberley.ml.ann.gnn.GeneticNeuralNetworkTrainingConfiguration;
 import ewimberley.ml.ann.gnn.classifier.ClassificationGenticNeuralNetwork;
 
 public class IrisGNNBenchmark {
@@ -31,11 +31,12 @@ public class IrisGNNBenchmark {
 		DataLoader dl = new DataLoader();
 		dl.loadCSVFile(dataFile);
 
-		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
+		GeneticNeuralNetworkTrainingConfiguration config = new GeneticNeuralNetworkTrainingConfiguration();
 		config.setNumNetworksPerGeneration(3000);
 		config.setNumHiddenLayers(3);
 		config.setNumNeuronsPerLayer(8);
 		config.setMaxLearningRate(10.0);
+		config.setMaxThreads(Runtime.getRuntime().availableProcessors() * 2);
 
 		try {
 			FileWriter fileWriter = new FileWriter("/home/ewimberley/iris_benchmark.csv");

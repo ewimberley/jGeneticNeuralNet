@@ -181,7 +181,7 @@ Networks are judged for fitness by computing the average error on training sampl
 	\EndFor
 }
 
-Inside each thread the original network is cloned, mutated, and then evaluated for average error. This minimizes the 
+Inside each thread the original network is cloned, mutated, and then evaluated for average error. This minimizes the amount of work that must be performed in the main thread.
 
 \subsection{Activation Function Memoization}
 

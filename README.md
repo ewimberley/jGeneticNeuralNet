@@ -1,7 +1,7 @@
 # jGeneticNeuralNet
 A Java library that implements neural networks with a genetic training algorithm.
 
-##Classification Usage
+## Classification Usage
 
 ```java
 String dataFile = "src/test/resources/iris.data";
@@ -30,7 +30,7 @@ Iris-setosa		0	0	11
 Accuracy: 0.967741935483871
 ```
 
-##Regression Usage
+## Regression Usage
 
 ```java
 NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();

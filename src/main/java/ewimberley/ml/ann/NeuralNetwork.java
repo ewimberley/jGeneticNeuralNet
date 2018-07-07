@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ewimberley.ml.ConfusionMatrix;
 import ewimberley.ml.Learner;
 
 /**
@@ -31,11 +32,11 @@ public abstract class NeuralNetwork<Y> extends Learner<Y> {
 
 	protected Map<OutputNeuron, Y> outputs;
 
-	private NeuralNetworkTrainingConfiguration config;
+	protected NeuralNetworkTrainingConfiguration config;
 
-	private double learningRate;
-	
-	private double annealingRate;
+	protected double learningRate;
+
+	private ConfusionMatrix confusion;
 
 	public NeuralNetwork(double[][] data, Y[] y) {
 		super(data, y);
@@ -134,14 +135,6 @@ public abstract class NeuralNetwork<Y> extends Learner<Y> {
 		this.learningRate = learningRate;
 	}
 
-	public double getAnnealingRate() {
-		return annealingRate;
-	}
-
-	public void setAnnealingRate(double annealingRate) {
-		this.annealingRate = annealingRate;
-	}
-
 	public Map<Integer, InputNeuron> getFeatureToInputMap() {
 		return featureToInputMap;
 	}
@@ -189,6 +182,25 @@ public abstract class NeuralNetwork<Y> extends Learner<Y> {
 	 */
 	public void setConfig(NeuralNetworkTrainingConfiguration config) {
 		this.config = config;
+	}
+
+	/**
+	 * Get the testing confusion matrix for this network (if it has been tested).
+	 * 
+	 * @return the confusion matrix
+	 */
+	public ConfusionMatrix getConfusion() {
+		return confusion;
+	}
+
+	/**
+	 * Set the testing confusion matrix for this network.
+	 * 
+	 * @param confusion
+	 *            the testing confusion matrix
+	 */
+	public void setConfusion(ConfusionMatrix confusion) {
+		this.confusion = confusion;
 	}
 
 }

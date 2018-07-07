@@ -34,15 +34,13 @@ public class IrisGNNExample extends JFrame {
 		DataLoader dl = new DataLoader();
 		dl.loadCSVFile(dataFile);
 		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
-		config.setNumNetworksPerGeneration(1000);
-		config.setNumGenerations(300);
-		config.setNumHiddenLayers(5);
+		config.setNumNetworksPerGeneration(3000);
+		config.setNumGenerations(500);
+		config.setNumHiddenLayers(3);
 		config.setNumNeuronsPerLayer(8);
-		config.setMaxLearningRate(100.0);
+		config.setMaxLearningRate(10.0);
 		config.setVisualizer(vis);
-		GenticNeuralNetwork<String> model = ClassificationGenticNeuralNetwork.train(dl.getData(),
-				//dl.getClassLabels(), 500, 300, 5, 8, 100.0);
-				dl.getClassLabels(), config);
+		GenticNeuralNetwork<String> model = ClassificationGenticNeuralNetwork.train(dl.getData(), dl.getClassLabels(), config);
 		model.printNetwork();
 	}
 	

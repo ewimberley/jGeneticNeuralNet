@@ -35,10 +35,8 @@ public abstract class GenticNeuralNetwork<Y> extends NeuralNetwork<Y> {
 	}
 
 	protected static PriorityQueue<GenticNeuralNetwork<?>> repopulate(NeuralNetworkTrainingConfiguration config, PriorityQueue<GenticNeuralNetwork<?>> survivors) {
-		PriorityQueue<GenticNeuralNetwork<?>> population;
-		int numNetworks;
-		numNetworks = 0;
-		population = new PriorityQueue<GenticNeuralNetwork<?>>(new GenticNeuralNetworkErrorComparator());
+		PriorityQueue<GenticNeuralNetwork<?>> population = new PriorityQueue<GenticNeuralNetwork<?>>(new GenticNeuralNetworkErrorComparator());;
+		int numNetworks = 0;
 		while (numNetworks < config.getNumNetworksPerGeneration()) {
 			GenticNeuralNetwork<?> network = survivors.poll();
 			population.add(network);
@@ -68,9 +66,6 @@ public abstract class GenticNeuralNetwork<Y> extends NeuralNetwork<Y> {
 
 	public GenticNeuralNetwork(double[][] data, Y[] y) {
 		super(data, y);
-		//setLearningRate(0.10); // reasonable default
-		//setAnnealingRate(0.000001);
-		setAnnealingRate(0.0);
 		averageError = -1.0;
 	}
 
@@ -79,6 +74,13 @@ public abstract class GenticNeuralNetwork<Y> extends NeuralNetwork<Y> {
 	 */
 	public void mutate() {
 		generateNewId();
+		double learningRateDelta = 0.0;
+		if(getRandomDouble() > 0.5) {
+			learningRateDelta = this.learningRate * getRandomDouble();
+		} else {
+			learningRateDelta = -this.learningRate * getRandomDouble();
+		}
+		this.learningRate += learningRateDelta;  
 		for (Map.Entry<String, Neuron> neuronEntry : getNeurons().entrySet()) {
 			if (neuronEntry.getValue() instanceof GeneticNeuron) {
 				((GeneticNeuron) neuronEntry.getValue()).mutate();

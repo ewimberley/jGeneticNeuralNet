@@ -5,13 +5,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * A confusion matrix model used to determine model accuracy, sensitivity,
+ * specificity, etc.
+ * 
+ * @author ewimberley
+ *
+ */
 public class ConfusionMatrix {
-	
+
 	private int[][] confusionMatrix;
 	private Set<String> uniqueClassLabels;
 	private Map<String, Integer> classLabelConfusionMatrixIndices;
 	String[] confusionMatrixIndicesToClassLabel;
-	
+
 	public ConfusionMatrix(String[] classLabels) {
 		uniqueClassLabels = calculateUniqueClassLabels(classLabels);
 		classLabelConfusionMatrixIndices = new HashMap<String, Integer>();
@@ -25,9 +32,11 @@ public class ConfusionMatrix {
 		// first dimension is expected, second dimension is predicted
 		confusionMatrix = new int[uniqueClassLabels.size()][uniqueClassLabels.size()];
 	}
-	
+
+	/**
+	 * Print the confusion matrix to stdout.
+	 */
 	public void printConfusionMatix() {
-		int numTestingSamples = 0;
 		for (int i = 0; i < confusionMatrix.length; i++) {
 			if (i == 0) {
 				System.out.print("expRow/predCol\t");
@@ -41,19 +50,35 @@ public class ConfusionMatrix {
 					System.out.print(confusionMatrixIndicesToClassLabel[i] + "\t\t");
 				}
 				System.out.print(confusionMatrix[i][j] + "\t");
-				numTestingSamples += confusionMatrix[i][j];
+
 			}
 			System.out.println();
 		}
 
+		double accuracy = computeAccuracy();
+		System.out.println("Accuracy: " + accuracy);
+	}
+
+	/**
+	 * Compute the total accuracy of the confusion matrix.
+	 * 
+	 * @return the percentage of correctly classified instances
+	 */
+	public double computeAccuracy() {
+		int numTestingSamples = 0;
+		for (int i = 0; i < confusionMatrix.length; i++) {
+			for (int j = 0; j < confusionMatrix[i].length; j++) {
+				numTestingSamples += confusionMatrix[i][j];
+			}
+		}
 		int numCorrect = 0;
 		for (int i = 0; i < confusionMatrix.length; i++) {
 			numCorrect += confusionMatrix[i][i];
 		}
 		double accuracy = (double) numCorrect / (double) numTestingSamples;
-		System.out.println("Accuracy: " + accuracy);
+		return accuracy;
 	}
-	
+
 	private static HashSet<String> calculateUniqueClassLabels(String[] classLabels) {
 		HashSet<String> uniqueClassLabels = new HashSet<String>();
 		for (String classLabel : classLabels) {

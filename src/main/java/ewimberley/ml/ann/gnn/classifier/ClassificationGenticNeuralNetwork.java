@@ -57,10 +57,10 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 					(InputNeuron) neurons.get(inputMappingEntry.getValue().getUuid()));
 		}
 		this.setLayers(toClone.getLayers());
-		setLearningRate(toClone.getLearningRate() * (1.0 - toClone.getAnnealingRate()));
+		setLearningRate(toClone.getLearningRate() * (1.0 - config.getAnnealingRate()));
 	}
 
-	public static GenticNeuralNetwork<String> train(double[][] data, String[] classLabels,
+	public static ClassificationGenticNeuralNetwork train(double[][] data, String[] classLabels,
 			NeuralNetworkTrainingConfiguration config) {
 		ConfusionMatrix cf = new ConfusionMatrix(classLabels);
 
@@ -145,7 +145,8 @@ public class ClassificationGenticNeuralNetwork extends GenticNeuralNetwork<Strin
 		}
 		((ClassificationGenticNeuralNetwork) bestNetwork).test(data, classLabels, cf, testingIndices);
 		cf.printConfusionMatix();
-		return (GenticNeuralNetwork<String>) bestNetwork;
+		bestNetwork.setConfusion(cf);
+		return (ClassificationGenticNeuralNetwork) bestNetwork;
 
 	}
 

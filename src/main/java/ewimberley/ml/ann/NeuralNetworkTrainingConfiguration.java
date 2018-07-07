@@ -9,6 +9,7 @@ public class NeuralNetworkTrainingConfiguration {
 	private int numHiddenLayers;
 	private int numNeuronsPerLayer;
 	private double maxLearningRate;
+	private double annealingRate;
 	private ANNVisualizer visualizer;
 	private int maxThreads;
 	private double probMutateEdges;
@@ -111,6 +112,14 @@ public class NeuralNetworkTrainingConfiguration {
 
 	public void setProbMutateActivationFunction(double probMutateActivationFunction) {
 		this.probMutateActivationFunction = probMutateActivationFunction;
+	}
+
+	public double getAnnealingRate() {
+		return annealingRate;
+	}
+
+	public void setAnnealingRate(double annealingRate) {
+		this.annealingRate = annealingRate;
 	}
 
 }

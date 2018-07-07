@@ -1,5 +1,5 @@
 \documentclass[twocolumn]{article}
-\usepackage{lipsum,scrextend,mathtools,float,xspace,algorithm,algpseudocode,tabularx}
+\usepackage{lipsum,scrextend,mathtools,float,xspace,algorithm,algpseudocode,tabularx,soul}
 \usepackage[table]{xcolor}
 \usepackage[backend=biber,sorting=none,style=ieee]{biblatex}
 \addbibresource{geneticNeuralNet.bib}  
@@ -11,7 +11,7 @@
 }
 
 \newcommand\pcode[5]{
-	\begin{algorithm}[H] \caption{#1} \label{pcode:#2} \begin{algorithmic}[1]
+	\begin{algorithm} \caption{#1} \label{pcode:#2} \begin{algorithmic}[1]
 		\Function{#3}{#4} 
 			#5
 		\EndFunction
@@ -27,6 +27,10 @@
 }
 
 \newcommand\figRef[1]{Figure \ref{fig:#1}\xspace}
+
+\newcommand\todo[1]{{\sethlcolor{green}\hl{\textbf{TODO} #1}}}
+\newcommand\fixme[1]{{\sethlcolor{yellow}\hl{\textbf{FIXME} #1}}}
+\newcommand\xxx[1]{{\sethlcolor{red}\hl{\textbf{XXX} #1}}}
 
 \title{jGeneticNeuralNet: Multithreaded Training of Neural Networks by a Genetic Algorithm in Java}
 \author{Eric Wimberley}
@@ -49,7 +53,7 @@ Genetic algorithms (GAs) are algorithms that use random mutations of solutions t
 More recent implementations allow for the structure of the network to mutate~\cite{LamStructure}. This allows networks to form more optimal structures for a particular problem space, as well as to optimize networks for size and complexity. For example, a GNN could automatically form a Convolutional Neural Network (CNN), which is optimal for problems such as handwritten character recognition~\cite{ConvolutionalCharacterClassification}, and classification on other complex data. 
 
 \section{Network Model}
-For extensibility, neurons are implemented as objects. Each neuron has the following fields:
+For extensibility and ease of implementation, neurons are implemented as objects. InputNeurons, HiddenNeurons, and OutputNeurons extend the neuron class. Each neuron has the following fields:
 
 \begin{itemize}
 	\item A unique ID 
@@ -73,12 +77,16 @@ $$\varphi_{sin}(x) = (sin(x*\pi-\pi/2)+1)/2$$
 A plot of the $\varphi_{sin}(x)$ activation function.
 }
 
+The arctan activation function can also be used as a bounded output function for classification or probability regressions.
+
 %y=arctan(x)/Pi+0.5
 $$\varphi_{arctan}(x) = arctan(x)/\pi+0.5$$
 
 \fig{images/tan.png}{tanact}{0.5}{
 A plot of the $\varphi_{arctan}(x)$ activation function.
 }
+
+A simple step function is implemented as follows.
 
 \[
 \varphi_{step}(x) =  
@@ -88,26 +96,33 @@ A plot of the $\varphi_{arctan}(x)$ activation function.
 \end{dcases}
 \]
 
-For regressions, some functions with a larger range are implemented.
+For regressions, some functions with a larger range are implemented, such as the linear and squred activations below.
 
 $$\varphi_{linear}(x) = x$$
 
-FIXME add additional activation functions x*x, etc...
+$$\varphi_{squared}(x) = x^2$$
 
 \section{Genetic Algorithm}
-Networks are trained with a genetic algorith, which first produces a large number of random networks. Each network is tested for fitness by determining its average error rate on the training data, and the population of networks is mutated to generate networks with improved fitness.
-
-\subsection{Fitness}
-\lipsum[1]
+Networks are trained with a genetic algorith, which first produces a large number of random networks. Each network is tested for fitness by determining its average error rate on the training data, and the population of networks is mutated to generate networks with improved fitness. By selecting only the networks with the lowest error at each step (the most fit networks), the population of networks slowly moves towards a low error rate.
 
 \subsection{Mutation}
+
+Mutation can affect edge weight, node bias, node activation function, and network structure. Numeric values are changed by a random fraction of the learning rate, which is set as a hyperparameter. 
 
 \fig{images/originalRegression.png}{originalStructure}{0.2}{
 A simple regression network that is fully connected.
 }
 
-\fig{images/mutatedRegression.png}{originalStructure}{0.2}{
+\figRef{originalStructure} above shows a fully connected network that could be used for a regression model. After a few generations of random mutation and fitness selection, the network is no longer fully connected (\figRef{mutatedStructure}).
+
+\fig{images/mutatedRegression.png}{mutatedStructure}{0.2}{
 A mutated network with a different connection structure.
+}
+
+The visualization in \figRef{enhancedVis} below shows a network that was trained on the Iris dataset~\cite{IrisDataset}. It shows the variety of edge weights, biases and activation functions that have been selected by the genetic algorithm.
+
+\fig{images/enhancedVisualization.png}{enhancedVis}{0.2}{
+A visualization with lowest edge weights in blue and highest edge weights in red. Biases 
 }
 
 \section{Optimizations}
@@ -120,23 +135,37 @@ The network training algorithm employs several important optimizations:
 \end{itemize}
 
 \subsection{Multithreaded Training}
-\pcode{Training Algorithm}{train}{train}{}{
-	\State Let pool be a thread pool that accepts jobs
-	\State Let population be a set of networks
-	\For{$nework$ in $population$} 
-		\If {$condition$}
-		\EndIf
+
+Networks are judged for fitness by computing the average error on training samples. This can be computed in an embarassingly parellel fashion by running one thread per network. As shown in the pseudocode below, a job to compute the fitness of a network is executed in a thread pool, which can be configured with a maximum number of threads depending on hardware.
+
+\pcode{Training Algorithm}{train}{train}{$config$}{
+	\State $pool=$ fitness computing thread pool
+	\State $pop=$ network queue ordered by fitness
+	\State $offspring=$ job queue ordered by fitness
+	\State $survivors=$ network queue ordered by fitness 
+	\For{$generation < config.maxGens$}
+		\For{$nework$ in $population$} 
+			\State $pool.execute(new Job(network))$
+		\EndFor
+		\State $pool.shutdown()$
+		\While{$pool.isRunning()$}
+			\State $sleep(10)$	
+		\EndWhile
+		\State i = 0
+		\While{$!pool.isEmpty()$}
+			\State $offspring.add(pool.getJob(i))$
+			\State i = i + 1
+		\EndWhile
+		\While{$survivors.size < config.population$}
+			\State $survivors.add(offpring.poll().getNetwork())$
+		\EndWhile
+		\State $population = survivors$
 	\EndFor
 }
 
 \subsection{Activation Function Memoization}
 
-Highly connected networks use the output from the same neuron for multiple neurons in the next layer. Rather than recalculating the output of these neurons, the activation function output is memoized. Each neuron only needs to store two variables in order to accomplish this. Note that this optimization is important for both training and production use of the network.
-
-\begin{itemize}
-        \item The previous activation output 
-        \item A flag indicating whether to use the memoized value
-\end{itemize}
+Highly connected networks use the output from the same neuron for multiple neurons in the next layer. Rather than recalculating the output of these neurons, the activation function output is memoized. Each neuron only needs to store two variables in order to accomplish this: the previous activation output and a ``memoized'' flag. Note that this optimization is important for both training and production use of the network.
 
 \fig{images/memoization.png}{memoization}{0.4}{
 Two neurons use the output of neuron b. Instead of recomputing b each time, the output of b can be memoized. Note that $x_i$ refers to the bias for that neuron.
@@ -157,38 +186,88 @@ The structure from \figRef{memoization} occurs a large number of times in layere
 
 For a fully connected neural network with $N$ layers and $M$ neurons per layer, memoization reduces predicion complexity from $O(M \times M \times N)$ to $O(M \times N)$. In other words, instead of computing the neuronal output for each conection for each layer, neuronal output is computed once per neuron. Not all networks are fully connected, but this is the worst case scenario for a non-memoized implementation. 
 
+\subsection{Fitness-Based Offspring Rate}
+
+More fit networks produce more offspring than less fit networks. This is based on the idea that a mutant of a more fit network is more likely to produce a better network than a less fit network. Not only should this decrease the number of generations required to reach a sufficiently trained model, but it should reduce the number of total networks tested for fitness as well. This results in a shorter training time.
+
 \section{Methods}
-\lipsum[1]
+\subsection{Classification}
 
-\subsection{Usage}
-
-TODO update with config object
-\code{
-String dataFile = "src/test/resources/iris.data"; \\
-DataLoader dl = new DataLoader(); \\
-dl.loadCSVFile(dataFile); \\
-Learner<String> model = ClassificationGenticNeuralNetwork.train( \\
-dl.getData(), dl.getClassLabels(), 1000, 500, 5, 8, 100.0);
-}
-
-\subsection{Tests}
-
-\section{Results}
+The Iris dataset~\cite{IrisDataset} was used to train classifiers. Future implementaions may use 10-fold cross validation, however the current algorithm simply leaves out 1/5th of the input data for testing. Models were judged based on their 3-class accuracy. Two-hundred networks with 3 hidden layers of 8 neurons each were trained for 15, 30, 60, 120, 240 and 480 generations respectively. The confusion matrix and accuracy for one such model is shown below.
 
 \begin{center}
 \begin{tabular}{ l c c c }
-Expected & Iris-versicolor & Iris-virginica & Iris-setosa \\
-Iris-versicolor & 8 & 1 & 0 \\ 
-Iris-virginica & 0 & 10 & 0 \\
-Iris-setosa & 0 & 0 & 12
+Expected & versicolor & virginica & setosa \\
+versicolor & 8 & 1 & 0 \\ 
+virginica & 0 & 10 & 0 \\
+setosa & 0 & 0 & 12
 \end{tabular}
 \end{center}
 
 Accuracy: 0.967741935483871
 
-\subsection{Classification}
-
 \subsection{Regression}
+The $x^2$ function was used to generate training data for a regression network. Each network had 2 hidden layers and 6 neurons per layer. Like the classification benchmark, 1/5th of the input data was set aside for testing, and two-hundred networks were trained for 15, 30, 60, 120, 240 and 480 generations. Some expected outputs and predicted outputs are compared in the table below, along with the accompanying mean squared error.
+
+\begin{center}
+\begin{tabular}{ l c }
+Expected & Predicted \\
+0.0 & 1.20346 \\
+1.0 & 2.06567 \\
+4.0 & 5.16131 \\
+9.0 & 10.0320 \\
+16.0 & 16.9270
+\end{tabular}
+\end{center}
+
+Mean squared error: 0.3971038018343635
+
+\subsection{Usage}
+To create a classifier network, use $ClassificationGenticNeuralNetwork.train$ as shown below. Training configuration and hyperparameters are stored in a NeuralNetworkTrainingConfiguration object.
+
+\code{
+\tiny
+String dataFile = "src/test/resources/iris.data"; \\
+DataLoader dl = new DataLoader(); \\
+dl.loadCSVFile(dataFile); \\
+NeuralNetworkTrainingConfiguration config = \\ new NeuralNetworkTrainingConfiguration(); \\
+config.setNumNetworksPerGeneration(3000); \\
+config.setNumGenerations(500); \\ 
+config.setNumHiddenLayers(3); \\
+config.setNumNeuronsPerLayer(8); \\
+config.setMaxLearningRate(10.0); \\
+config.setVisualizer(vis); \\
+GenticNeuralNetwork<String> model = \\ ClassificationGenticNeuralNetwork.train(dl.getData(),  dl.getClassLabels(), config);
+}
+
+A regression network is created with $RegressionGenticNeuralNetwork.train$ instead, such as the example below which was trained on the $x^2$ function.
+
+\code{
+\tiny
+NeuralNetworkTrainingConfiguration config = \\ new NeuralNetworkTrainingConfiguration(); \\
+config.setNumNetworksPerGeneration(1000); \\
+config.setNumGenerations(500); \\ 
+config.setNumHiddenLayers(2); \\
+config.setNumNeuronsPerLayer(6); \\
+config.setMaxLearningRate(1.0); \\
+config.setVisualizer(vis); \\
+config.setProbMutateActivationFunction(0.1); \\
+RegressionGenticNeuralNetwork bestNetwork = \\ RegressionGenticNeuralNetwork.train(data, values, config);
+}
+
+\section{Results}
+
+Classification accuracy for the 3 class Iris problem is shown in \figRef{classificationBenchmark} below. Accuracy increases as exepected with generation number until generation 240. However there was no noticable difference between 240 and 480 generations in terms of average or variance. Some training attempts appear to get stuck in local minima. The average accuracy seems to stabalize at around 0.9.
+
+\fig{images/AccuracyByGeneration.png}{classificationBenchmark}{0.45}{
+Classification accuracy after 15, 30, 60, 120, 240, and 480 generations.
+}
+
+Mean squared error for a regression of the $x^2$ function (\figRef{regressionBenchmark}) resulted in many more outliers than classification. However, the distribution of model error improves with increased generations.
+
+\fig{images/ErrorByGeneration.png}{regressionBenchmark}{0.45}{
+Regression mean squared error after 15, 30, 60, 120, 240, and 480 generations.
+}
 
 \section{Conclusion}
 \lipsum[3]

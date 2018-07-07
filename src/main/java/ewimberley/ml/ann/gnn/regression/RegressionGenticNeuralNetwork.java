@@ -60,10 +60,10 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 					(InputNeuron) neurons.get(inputMappingEntry.getValue().getUuid()));
 		}
 		this.setLayers(toClone.getLayers());
-		setLearningRate(toClone.getLearningRate() * (1.0 - toClone.getAnnealingRate()));
+		setLearningRate(toClone.getLearningRate() * (1.0 - config.getAnnealingRate()));
 	}
 
-	public static Learner<Double> train(double[][] data, double[] yPrim, NeuralNetworkTrainingConfiguration config) {
+	public static RegressionGenticNeuralNetwork train(double[][] data, double[] yPrim, NeuralNetworkTrainingConfiguration config) {
 		Double[] y = new Double[yPrim.length];
 		for (int i = 0; i < yPrim.length; i++) {
 			y[i] = yPrim[i];
@@ -149,7 +149,7 @@ public class RegressionGenticNeuralNetwork extends GenticNeuralNetwork<Double> {
 		}
 		double mse = ((RegressionGenticNeuralNetwork) bestNetwork).test(data, y, testingIndices);
 		System.out.println("Mean squared error: " + mse);
-		return (Learner<Double>) bestNetwork;
+		return (RegressionGenticNeuralNetwork) bestNetwork;
 	}
 
 	public void init(int numHiddenLayers, int numNeuronsPerLayer) {

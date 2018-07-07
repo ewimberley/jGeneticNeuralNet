@@ -46,7 +46,7 @@ public class RegressionGenticNeuralNetworkVisualization extends JFrame {
 		}				
 		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
 		config.setNumNetworksPerGeneration(1000);
-		config.setNumGenerations(500);
+		config.setNumGenerations(1000);
 		config.setNumHiddenLayers(2);
 		config.setNumNeuronsPerLayer(6);
 		config.setMaxLearningRate(1.0);

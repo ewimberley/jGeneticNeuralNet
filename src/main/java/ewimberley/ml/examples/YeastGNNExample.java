@@ -31,10 +31,10 @@ public class YeastGNNExample extends JFrame {
 		dl.loadCSVFile(dataFile);
 		NeuralNetworkTrainingConfiguration config = new NeuralNetworkTrainingConfiguration();
 		config.setNumNetworksPerGeneration(300);
-		config.setNumGenerations(500000);
+		config.setNumGenerations(5000);
 		config.setNumHiddenLayers(4);
-		config.setNumNeuronsPerLayer(12);
-		config.setMaxLearningRate(3.0);
+		config.setNumNeuronsPerLayer(14);
+		config.setMaxLearningRate(4.0);
 		config.setVisualizer(vis);
 		GenticNeuralNetwork<String> model = ClassificationGenticNeuralNetwork.train(dl.getData(),
 				dl.getClassLabels(), config);

@@ -33,9 +33,10 @@
 \newcommand\xxx[1]{{\sethlcolor{red}\hl{\textbf{XXX} #1}}}
 
 \title{jGeneticNeuralNet: Multithreaded Training of Neural Networks by a Genetic Algorithm in Java}
-\author{Eric Wimberley}
+\author{Version 0.1 \\ Charles Eric Wimberley}
 \begin{document}
 \maketitle
+
 
 \begin{abstract}
 Genetic neural networks, first characterized in 1989, have generally taken a back seat to training algorithms with a better time complexity. However, the more complex neural networks being used for image, video, and audio processing today use varying structures. Gradient descent algorithms are good at quantitative error reduction, but qualitative properties such as network structure must be determined with alternative algorithms.
@@ -259,6 +260,8 @@ Regression mean squared error after 15, 30, 60, 120, 240, and 480 generations.
 \section{Conclusion}
 
 While a genetic algorithm is unlikely to beat backpropagation in terms of time complexity, it has the advantage of optimizing network structure and other qualitative network properties. The algorith was able to train high quality models on known good data sets. Future improvements could include cross-fold validation, computation of AUC ROC, and area under the precision/recall curve to give a more in depth evaluation of models. 
+
+Occasionally, the training algorithm appears to get stuck in a local minimum. It is unclear if there is a solution to this problem besides starting the training process over. Some enhancements need to be made to the library before production release, including a minimum training cuttoff option, cross-fold validation, and categorical input variables. 
 
 \printbibliography
 

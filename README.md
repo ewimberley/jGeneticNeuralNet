@@ -1,7 +1,7 @@
 # jGeneticNeuralNet
 A Java library that implements neural networks with a genetic training algorithm.
 
-![Neural Network Visualization](images/enhancedVisualization.png | width=600)
+![Neural Network Visualization](images/enhancedVisualization.png){:height="50%" width="50%"}
 
 ## Classification Usage
 

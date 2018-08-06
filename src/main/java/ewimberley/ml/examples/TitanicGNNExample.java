@@ -32,11 +32,11 @@ public class TitanicGNNExample extends JFrame {
 		DataLoader dl = new DataLoader();
 		dl.loadCSVFile(dataFile);
 		GeneticNeuralNetworkTrainingConfiguration config = new GeneticNeuralNetworkTrainingConfiguration();
-		config.setNumNetworksPerGeneration(500);
-		config.setNumGenerations(2000);
-		config.setNumHiddenLayers(4);
-		config.setNumNeuronsPerLayer(6);
-		config.setMaxLearningRate(20.0);
+		config.setNumNetworksPerGeneration(2000);
+		config.setNumGenerations(8000);
+		config.setNumHiddenLayers(2);
+		config.setNumNeuronsPerLayer(10);
+		config.setMaxLearningRate(2.0);
 		config.setMaxThreads(Runtime.getRuntime().availableProcessors() * 2);
 		config.setVisualizer(vis);
 		GenticNeuralNetwork<String> model = ClassificationGenticNeuralNetwork.train(dl.getData(), dl.getClassLabels(), config);
